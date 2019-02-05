@@ -1,5 +1,5 @@
 # API for the object storage server (Minio)
-The purpose of this API is to allow the client side projects to upload and manage the users files such as photos, videos, logs, files, backups and more.
+Backend Fileupload API, is a single access point to manage your Object Storage Server (minio).
 
 ## Tools and Technologies.
 ##### I. Technologies :
