@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  backend.fileupload.api:
-    image: ${DOCKER_REGISTRY-}backendfileuploadapi
-    build:
-      context: .
-      dockerfile: Backend.Fileupload.API/Dockerfile
