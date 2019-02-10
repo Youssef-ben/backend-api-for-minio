@@ -62,3 +62,4 @@ volumes:
 # Activate Plugin = https://github.com/netsyno/elasticsearch-ingest-attachment
 # ES    : https://github.com/elastic/stack-docker/blob/master/docker-compose.yml
 # Minio : https://raw.githubusercontent.com/minio/minio/master/docs/orchestration/docker-compose/docker-compose.yaml
+#
