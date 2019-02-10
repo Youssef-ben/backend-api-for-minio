@@ -1,1 +1,1 @@
-.PHONY: start-docker clean-docker
+.PHONY: start-docker stop-docker clean-docker nuke
