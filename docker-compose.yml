@@ -1,0 +1,65 @@
+version : "3.6"
+
+# Sources :
+# Activate Plugin = https://github.com/netsyno/elasticsearch-ingest-attachment
+# ES    : https://github.com/elastic/stack-docker/blob/master/docker-compose.yml
+# Minio : https://raw.githubusercontent.com/minio/minio/master/docs/orchestration/docker-compose/docker-compose.yaml
+#
+
+networks:
+  backend-network:
+    name: backend-network
+    driver: bridge
+
+volumes:
+  data-es:
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
+    container_name: backend-elasticsearch
+    environment:
+      - cluster.name=backend-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.type=single-node"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+    volumes:
+      - 'data-es:/usr/share/elasticsearch/data'
+    networks:
+      - backend-network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.6.0
+    container_name: backend-kibana
+    environment:
+      - SERVER_NAME:"kibana.backend.org"
+      - ELASTICSEARCH_HOSTS:http://backend-elasticsearch:9200
+      - ELASTICSEARCH_URL:http://backend-elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    ports:
+      - 9201:5601
+    volumes:
+      - './data/kibana:/usr/share/elasticsearch/data'
+    networks:
+      - backend-network
+
+  minio:
+    image: minio/minio
+    container_name: backend-minio
+    volumes:
+     - './data/minio:/data'
+    ports:
+     - 9202:9000
+    environment:
+     MINIO_ACCESS_KEY: tester
+     MINIO_SECRET_KEY: tester123456789
+    networks:
+      - backend-network
+    command: server /data

@@ -28,7 +28,7 @@ tarballs/
 test-results/
 Thumbs.db
 *.lock
-.vs/
+.vs/Backend.Fileupload/v15/Server/sqlite3/db.lock
 
 # Mac bundle stuff
 *.dmg
@@ -44,3 +44,4 @@ Thumbs.db
 
 
 Data/
+Logs/

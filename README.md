@@ -24,3 +24,9 @@ This section will define the development rules.
 * [API Urls Standards.](https://github.com/WhiteHouse/api-standards)
 * [API Best practices.](https://medium.com/@schneidenbach/restful-api-best-practices-and-common-pitfalls-7a83ba3763b5)
 * [Guide for declaring issues.](https://guides.github.com/features/issues/)
+
+
+Install this in elastic search container
+ bin/elasticsearch-plugin install ingest-attachment
+
+Restart elasticsearch
