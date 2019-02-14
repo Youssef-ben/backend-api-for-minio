@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp2.1\Backend.Fileupload.API.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp2.1\Backend.API.xml</DocumentationFile>
     <OutputPath>bin\Debug\netcoreapp2.1\</OutputPath>
   </PropertyGroup>
 

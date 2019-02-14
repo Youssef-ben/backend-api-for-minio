@@ -69,5 +69,17 @@ namespace Backend.Manager.Helpers.Errors
         /// </summary>
         [Description(BackendConstants.InvalidObjectValues)]
         INVALID_OBJECT_VALUES,
+
+        /// <summary>
+        /// Values : Error while Creating the elasticseach ingest pipline
+        /// </summary>
+        [Description(BackendConstants.ErrorWhileCreatingEsIngestPipline)]
+        ERROR_WHILE_CREATING_ES_INGEST_PIPLINE,
+
+        /// <summary>
+        /// Values : Error Indexing the document.
+        /// </summary>
+        [Description(BackendConstants.ErrorWhileIndexingTheDocument)]
+        ERROR_WHILE_INDEXING_THE_DOCUMENT,
     }
 }

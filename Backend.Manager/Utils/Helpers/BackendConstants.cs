@@ -54,6 +54,16 @@
         /// </summary>
         public const string AtleastOneValueNeeded = "You must enter at least one value.";
 
+        /// <summary>
+        /// Value : {Error While Creating the Elasticsearch Ingest pipeline.}.
+        /// </summary>
+        public const string ErrorWhileCreatingEsIngestPipline = "Error While Creating the Elasticsearch Ingest pipeline.";
+
+        /// <summary>
+        /// Value : {Error While Indexing the document in elasticsearch.}.
+        /// </summary>
+        public const string ErrorWhileIndexingTheDocument = "Error While Indexing the document in elasticsearch.";
+
         #endregion
 
         #region " [LOGGING MESSAGES] "

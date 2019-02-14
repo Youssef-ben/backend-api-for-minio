@@ -1,4 +1,5 @@
 ﻿using Backend.API.Config;
+using Backend.Manager.Utils.Models.ConfigModels;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -41,7 +42,7 @@ namespace Backend.API
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             services.AddLogging();
-            
+
             services.AddMvc(opt =>
             {
                 opt.Filters.Add(typeof(ValidateModelAttribute));
@@ -73,6 +74,9 @@ namespace Backend.API
             {
                 o.ReportApiVersions = true;
             });
+
+            // Create an instance of IOption for the {Elasticsearch} section of the appsettings
+            services.Configure<AppsettingsModel>(Configuration.GetSection("Elasticsearch"));
 
             // Register Projects Dependency injection
             SwaggerConfig.Register(services);
