@@ -2,8 +2,9 @@
 {
     using System;
     using System.ComponentModel;
+    using Nest;
 
-    public static class EnumsExtensions
+    public static class UtilsExtensions
     {
         /// <summary>
         /// Extension method for the defined enums to convert and get the {int} value

@@ -11,4 +11,7 @@ stop-docker:
 nuke:
 	@echo "Stopping and deleting the containers using docker-compose..."
 	@docker-compose down
+
+	
+##bin/elasticsearch-plugin install ingest-attachment
 	

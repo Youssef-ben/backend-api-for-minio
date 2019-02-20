@@ -48,8 +48,8 @@
       </Rules>
       
       <AnalyzerSettings>
-        <StringProperty Name="CompanyName">Backend Fileupload.</StringProperty>
-        <StringProperty Name="Copyright">Backend Fileuplolad MIT. 2019</StringProperty>
+        <StringProperty Name="CompanyName">Backend API for Minio.</StringProperty>
+        <StringProperty Name="Copyright">Backend API for Minio MIT. 2019</StringProperty>
       </AnalyzerSettings>
     </Analyzer>
     

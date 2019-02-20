@@ -24,7 +24,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend.RuleSet", "Backend.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Settings", "Settings", "{5712F8DA-966D-434E-8213-6E54F033B005}"
 	ProjectSection(SolutionItems) = preProject
+		Settings\appsettings.Development.json = Settings\appsettings.Development.json
 		Settings\appsettings.json = Settings\appsettings.json
+		Settings\appsettings.Local.json = Settings\appsettings.Local.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend.Manager", "Backend.Manager\Backend.Manager.csproj", "{C288098D-99CA-4810-AC39-AB3EAB5DC058}"

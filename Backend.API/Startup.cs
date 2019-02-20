@@ -76,6 +76,7 @@ namespace Backend.API
             });
 
             // Create an instance of IOption for the {Elasticsearch} section of the appsettings
+            // TODO : Validate The Appsetting Modal
             services.Configure<AppsettingsModel>(Configuration.GetSection("Elasticsearch"));
 
             // Register Projects Dependency injection

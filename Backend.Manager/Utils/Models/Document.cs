@@ -1,4 +1,4 @@
-﻿namespace Backend.Fileupload.Manager.Utils.Models
+﻿namespace Backend.Manager.Utils.Models
 {
     using Nest;
 
@@ -7,6 +7,9 @@
         public string Id { get; set; }
 
         public string Name { get; set; }
+
+        [Completion]
+        public string NameCompletion { get; set; }
 
         public string Path { get; set; }
 

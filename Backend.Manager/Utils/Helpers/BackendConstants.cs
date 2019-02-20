@@ -57,12 +57,32 @@
         /// <summary>
         /// Value : {Error While Creating the Elasticsearch Ingest pipeline.}.
         /// </summary>
+        public const string ErrorWhileCreatingEsIndex = "Error While Creating the Elasticsearch base index.";
+
+        /// <summary>
+        /// Value : {Error While Creating the Elasticsearch Ingest pipeline.}.
+        /// </summary>
         public const string ErrorWhileCreatingEsIngestPipline = "Error While Creating the Elasticsearch Ingest pipeline.";
 
         /// <summary>
         /// Value : {Error While Indexing the document in elasticsearch.}.
         /// </summary>
         public const string ErrorWhileIndexingTheDocument = "Error While Indexing the document in elasticsearch.";
+
+        /// <summary>
+        /// Value : {Error While Deleting the document in elasticsearch.}.
+        /// </summary>
+        public const string ErrorWhileDeletingTheDocument = "Error While Deleting the document in elasticsearch.";
+
+        /// <summary>
+        /// Value : {Error While Deleting the document in elasticsearch.}.
+        /// </summary>
+        public const string ErrorWhileUpdatingTheDocument = "Error While Updating the document in elasticsearch.";
+
+        /// <summary>
+        /// Value : {Error While searching for the values.}.
+        /// </summary>
+        public const string ErrorWhileSearchingForValues = "Error While searching for the values.";
 
         #endregion
 

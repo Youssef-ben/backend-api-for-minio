@@ -1,5 +1,5 @@
 # API for the object storage server (Minio)
-Backend Fileupload API, is a single access point to manage your Object Storage Server (minio).
+Backend API, is a single access point to manage your Object Storage Server (minio).
 
 ## Tools and Technologies.
 ##### I. Technologies :
