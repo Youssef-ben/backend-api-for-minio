@@ -3,7 +3,7 @@
     using System;
     using System.IO;
     using System.Linq;
-    using Backend.Manager.Utils;
+    using Backend.Manager.Repository;
     using Backend.Tests.Config;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Internal;
@@ -15,11 +15,20 @@
     {
         private readonly IElasticsearchRepository EsRepository;
         private readonly string Filename = "test-file.docx";
+        private readonly string bucketName = "test";
 
         public ElasticsearchReposiotryTests()
         {
             var config = GetAppsettingsConfigs.GetConfiguration<ElasticSearchRepository>();
-            this.EsRepository = new ElasticSearchRepository(config.Logger, config.Configurations, config.Configurations.GetElasticSearchClient(), "test");
+            this.EsRepository = new ElasticSearchRepository(config.Logger, config.Configurations, config.Configurations.Value.Elasticsearch.GetElasticSearchClient());
+            this.EsRepository.SetBucketIndex(this.bucketName);
+        }
+
+        [Fact]
+        [Priority(0)]
+        public async void INIT_INDEX()
+        {
+            await this.EsRepository.CreateIndexIfNotExists();
         }
 
         [Fact]
@@ -65,6 +74,17 @@
         {
             var result = await this.EsRepository.AutoCompleteAsync("test");
             Assert.True(result.Count > 0);
+        }
+
+        [Fact]
+        [Priority(4)]
+        public async void Rename_Index_Success()
+        {
+            var result = await this.EsRepository
+                .SetBucketIndex("new_test")
+                .RenameDocumentIndexAsync("test", false);
+
+            Assert.True(result);
         }
 
         [Fact]
