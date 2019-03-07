@@ -4,6 +4,7 @@
     <CodeAnalysisRuleSet>..\Backend.Api.For.Minio.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug\netcoreapp2.1\Backend.Manager.xml</DocumentationFile>
     <OutputPath>bin\Debug\netcoreapp2.1\</OutputPath>
+    <NoWarn>1701;1702;CS1587</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>

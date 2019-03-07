@@ -1,9 +1,9 @@
 ﻿namespace Backend.Manager.Implementation.Buckets
 {
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Threading.Tasks;
+    using Backend.Manager.Helpers.Errors;
+    using Backend.Manager.Helpers.Extension;
     using Backend.Manager.Repository;
     using Backend.Manager.Utils.Models.ConfigModels;
     using Microsoft.Extensions.Logging;
@@ -44,25 +44,52 @@
             return await this.minioClient.BucketExistsAsync(this.bucket);
         }
 
-        public async Task<bool> CreateBucketAsync()
+        /// <summary>
+        /// The parameter is used to determine if we need to create ElasticSearch index or not.
+        /// This means that when renaming the bucket we don't want to create the ElasticSearch index in this method but
+        /// instead we will be creating it from the ElasticSearch layer.
+        /// </summary>
+        /// <param name="shouldCreateEsIndex">Define if we need to create the ElasticSearch Index too. </param>
+        /// <returns>True if all went as expected, false otherwise.</returns>
+        public async Task<bool> CreateBucketAsync(bool shouldCreateEsIndex = true)
         {
-            await this.minioClient.MakeBucketAsync(this.bucket);
+            if (!await this.minioClient.BucketExistsAsync(this.bucket))
+            {
+                await this.minioClient.MakeBucketAsync(this.bucket);
+            }
 
-            await this.esRepository.CreateIndexIfNotExists();
+            if (shouldCreateEsIndex)
+            {
+                await this.esRepository.CreateIndexIfNotExists();
+            }
 
             return true;
         }
 
-        public async Task<bool> RenameBucketAsync(string newName)
+        public async Task<bool> RenameBucketAsync(string newBucketName)
         {
+            newBucketName = newBucketName.SanitizeString();
+
             // Keep the name of the old bucket
             var oldBucketName = this.bucket;
+
+            // Check if the old bucket exists
+            if (!await this.minioClient.BucketExistsAsync(this.bucket))
+            {
+                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_BUCKET_DOESNT_EXISTS, new { Bucket = this.bucket });
+            }
 
             // Get the list of items from the first bucket
             var originalBucketObjects = await this.minioClient.GetBucketItemsAsync(oldBucketName).ConfigureAwait(false);
 
             // set the Name of the new Bucket
-            this.SetBucket(newName);
+            this.SetBucket(newBucketName);
+
+            // Create the New Bucket
+            if (!await this.CreateBucketAsync(false))
+            {
+                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_CREATING_MINIO_BUCKET, new { Bucket = newBucketName });
+            }
 
             // Copy the items into the new one - Minio
             foreach (var item in originalBucketObjects)
@@ -71,17 +98,37 @@
             }
 
             // Delete the original one - Minio
-            await this.minioClient.RemoveBucketAsync(oldBucketName);
+            await this.DeleteBucketAsync(oldBucketName);
 
             // Re-index in elasticsearch.
-            await this.esRepository.RenameDocumentIndexAsync(oldBucketName);
+            var result = await this.esRepository.RenameDocumentIndexAsync(oldBucketName, newBucketName);
 
-            throw new NotImplementedException();
+            return result;
         }
 
-        public Task<bool> DeleteBucketAsync()
+        public async Task DeleteBucketAsync(string bucket = "")
         {
-            throw new System.NotImplementedException();
+            if (string.IsNullOrWhiteSpace(bucket))
+            {
+                bucket = this.bucket;
+            }
+
+            var bucketObjects = await this.minioClient.GetBucketItemsAsync(bucket).ConfigureAwait(false);
+            foreach (var item in bucketObjects)
+            {
+                await this.minioClient.RemoveObjectAsync(bucket, item.Key);
+            }
+
+            await this.minioClient.RemoveBucketAsync(bucket);
+
+            /**
+             * Delete the Elasticsearch index only when the current bucket name equals the param.
+             * This means that the method was called by a method other that the <see cref="RenameBucketAsync(string)"/>
+             */
+            if (this.bucket.Equals(bucket))
+            {
+                await this.esRepository.DeleteIndexAsync();
+            }
         }
 
         public Task<ICollection<Bucket>> BucketsListAsync(int limit = 25, int page = 1)

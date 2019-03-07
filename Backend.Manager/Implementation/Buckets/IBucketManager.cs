@@ -8,11 +8,18 @@
     {
         BucketManager SetBucket(string name);
 
-        Task<bool> CreateBucketAsync();
+        /// <summary>
+        /// The parameter is used to determine if we need to create ElasticSearch index or not.
+        /// This means that when renaming the bucket we don't want to create the ElasticSearch index in this method but
+        /// instead we will be creating it from the ElasticSearch layer.
+        /// </summary>
+        /// <param name="shouldCreateEsIndex">Define if we need to create the ElasticSearch Index too. </param>
+        /// <returns>True if all went as expected, false otherwise.</returns>
+        Task<bool> CreateBucketAsync(bool shouldCreateEsIndex = true);
 
-        Task<bool> RenameBucketAsync(string newName);
+        Task<bool> RenameBucketAsync(string newBucketName);
 
-        Task<bool> DeleteBucketAsync();
+        Task DeleteBucketAsync(string bucket = "");
 
         Task<bool> BucketExistsAsync();
 

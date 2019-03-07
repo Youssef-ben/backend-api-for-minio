@@ -2,87 +2,53 @@
 {
     public class BackendConstants
     {
-        #region " [ERRORS MESSAGES] "
+        #region " [GENERAL - ERRORS MESSAGES] "
 
-        /// <summary>
-        /// Value : {Create method recieved a null parameter.}.
-        /// </summary>
         public const string CreateParameterRequired = "Create method recieved a null parameter.";
 
-        /// <summary>
-        /// Value : {Update method recieved a null parameter.}.
-        /// </summary>
         public const string UpdateParameterRequired = "Update method recieved a null parameter.";
 
-        /// <summary>
-        /// Value : {Delete method recieved a null parameter.}.
-        /// </summary>
         public const string DeleteParameterRequired = "Delete method recieved a null parameter.";
 
-        /// <summary>
-        /// Value : {Get method recieved a null parameter.}.
-        /// </summary>
         public const string GetParameterRequired = "Get method recieved a null parameter.";
 
-        /// <summary>
-        /// Value : {You must specify the required parameters.}.
-        /// </summary>
         public const string ParametersRequired = "You must specify the required parameters.";
 
-        /// <summary>
-        /// Value : {An object with the same values already exists.}.
-        /// </summary>
         public const string AlreadyExists = "An object with the same values already exists.";
 
-        /// <summary>
-        /// Value : {An error occured while saving/updating the object.}.
-        /// </summary>
         public const string UnexpectedError = "An error occurred while saving/updating the object.";
 
-        /// <summary>
-        /// Value : {The object you're looking for doesn't exists.}.
-        /// </summary>
         public const string NotFound = "The object you're looking for doesn't exists.";
 
-        /// <summary>
-        /// Value : {Invalid object value(s).}.
-        /// </summary>
         public const string InvalidObjectValues = "Invalid object value(s).";
 
-        /// <summary>
-        /// Value : {You must enter at least one value.}.
-        /// </summary>
         public const string AtleastOneValueNeeded = "You must enter at least one value.";
 
-        /// <summary>
-        /// Value : {Error While Creating the Elasticsearch Ingest pipeline.}.
-        /// </summary>
+        #endregion
+
+        #region " [ELASTICSEARCH - ERRORS MESSAGES] "
+
         public const string ErrorWhileCreatingEsIndex = "Error While Creating the Elasticsearch base index.";
 
-        /// <summary>
-        /// Value : {Error While Creating the Elasticsearch Ingest pipeline.}.
-        /// </summary>
         public const string ErrorWhileCreatingEsIngestPipline = "Error While Creating the Elasticsearch Ingest pipeline.";
 
-        /// <summary>
-        /// Value : {Error While Indexing the document in elasticsearch.}.
-        /// </summary>
         public const string ErrorWhileIndexingTheDocument = "Error While Indexing the document in elasticsearch.";
 
-        /// <summary>
-        /// Value : {Error While Deleting the document in elasticsearch.}.
-        /// </summary>
         public const string ErrorWhileDeletingTheDocument = "Error While Deleting the document in elasticsearch.";
 
-        /// <summary>
-        /// Value : {Error While Deleting the document in elasticsearch.}.
-        /// </summary>
         public const string ErrorWhileUpdatingTheDocument = "Error While Updating the document in elasticsearch.";
 
-        /// <summary>
-        /// Value : {Error While searching for the values.}.
-        /// </summary>
         public const string ErrorWhileSearchingForValues = "Error While searching for the values.";
+
+        public const string ErrorWhileDeletingTheIndex = "Error While Deleting the Specified Index in elasticsearch.";
+
+        #endregion
+
+        #region " [MINIO SECTION] "
+
+        public const string ErrorWhileCreatingMinioBucket = "Error While Creating the Minio Bucket.";
+
+        public const string ErrorMinioBucketDoesntExists = "The bucket you specified doesn't exists. please specify a valid name.";
 
         #endregion
 

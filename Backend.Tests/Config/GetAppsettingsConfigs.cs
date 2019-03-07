@@ -5,6 +5,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Minio;
     using Moq;
     using Nest;
 
@@ -40,5 +41,11 @@
             var connection = new ConnectionSettings(new Uri($"{self.NodeUri}:{self.Port}"));
             return new ElasticClient(connection);
         }
+
+        public static MinioClient GetMinioClient(this BackendConfiguration self)
+        {
+            return new MinioClient($"{self.NodeUri}:{self.Port}", self.Username, self.Password);
+        }
+
     }
 }

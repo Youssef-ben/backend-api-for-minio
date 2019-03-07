@@ -20,8 +20,8 @@
         private readonly ILogger logger;
         private readonly BackendConfiguration config;
 
-        private string bucketIndex = "_index";
-        private string bucketPipelineIndex = "_attachments_index";
+        private string bucketIndex = "-index";
+        private string bucketPipelineIndex = "-attachments-index";
 
         public ElasticSearchRepository(ILogger<ElasticSearchRepository> logger, IOptions<AppsettingsModel> config, IElasticClient esClient)
         {
@@ -34,8 +34,8 @@
         {
             bucket = string.IsNullOrWhiteSpace(bucket) ? this.config.DefaultIndex : bucket;
 
-            this.bucketIndex = $"{bucket}_index".ToLower();
-            this.bucketPipelineIndex = $"{bucket}_attachments_index".ToLower();
+            this.bucketIndex = $"{bucket}-index".ToLower();
+            this.bucketPipelineIndex = $"{bucket}-attachments-index".ToLower();
 
             return this;
         }
@@ -147,28 +147,39 @@
             return true;
         }
 
-        public async Task<bool> RenameDocumentIndexAsync(string oldIndex, bool deleteOldIndex = true)
+        public async Task<bool> RenameDocumentIndexAsync(string oldIndex, string newIndex, bool deleteOldIndex = true)
         {
-            var oldIndexName = $"{oldIndex}_index".ToLower();
+            // Always set the Current Index to the Old one
+            this.SetBucketIndex(oldIndex);
+            oldIndex = this.bucketIndex;
+            var ingestPipeline = this.bucketPipelineIndex;
 
-            var result = await this.esClient.ReindexOnServerAsync(r => r
-                .Source(s => s
-                    .Index(oldIndexName))
-                .Destination(d => d
-                    .Index(this.bucketIndex))
-                .WaitForCompletion(true));
+            var isNotEmpty = await this.SearchByContentAsync(string.Empty);
 
-            if (!result.IsValid)
+            // Set the Current Index to the new Name.
+            this.SetBucketIndex(newIndex);
+
+            if ((await this.esClient.IndexExistsAsync(this.bucketIndex)).Exists)
             {
-                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { result.DebugInformation });
+                return true;
+            }
+
+            if (isNotEmpty.Count > 0)
+            {
+                await this.ReIndexAsync(oldIndex);
+            }
+            else
+            {
+                await this.CreateIndexIfNotExists();
             }
 
             if (deleteOldIndex)
             {
-                var isDeleted = await this.esClient.DeleteIndexAsync(oldIndexName);
-                if (!isDeleted.IsValid)
+                var isDeleted = await this.esClient.DeleteIndexAsync(oldIndex);
+                var isPipeLIneDeleted = await this.esClient.DeletePipelineAsync(ingestPipeline);
+                if (!isDeleted.IsValid || !isPipeLIneDeleted.IsValid)
                 {
-                    throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { result.DebugInformation });
+                    throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { isDeleted.DebugInformation });
                 }
             }
 
@@ -216,6 +227,30 @@
             }
 
             return response.Exists;
+        }
+
+        public async Task<bool> DeleteIndexAsync()
+        {
+            if (!(await this.esClient.IndexExistsAsync(this.bucketIndex)).Exists)
+            {
+                return true;
+            }
+
+            var response = await this.esClient.DeleteIndexAsync(this.bucketIndex);
+
+            if (!response.IsValid)
+            {
+                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_DELETING_THE_INDEX, new { Es_Index = this.bucketIndex });
+            }
+
+            var pipelineResponse = await this.esClient.DeletePipelineAsync(this.bucketPipelineIndex);
+
+            if (!pipelineResponse.IsValid)
+            {
+                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_DELETING_THE_INDEX, new { Es_Index = this.bucketPipelineIndex });
+            }
+
+            return true;
         }
 
         public async Task CreateIndexIfNotExists()
@@ -279,6 +314,23 @@
             {
                 throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_CREATING_ES_INGEST_PIPLINE, new { Es_Index = this.bucketPipelineIndex });
             }
+        }
+
+        private async Task ReIndexAsync(string oldIndex)
+        {
+            var result = await this.esClient.ReindexOnServerAsync(r => r
+                .Source(s => s
+                    .Index(oldIndex))
+                .Destination(d => d
+                    .Index(this.bucketIndex))
+                .WaitForCompletion(true));
+
+            if (!result.IsValid)
+            {
+                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { result.DebugInformation });
+            }
+
+            await this.CreateAttachementPipeline();
         }
 
         private WildcardQuery GenerateWildCardQuery(string field, string value)

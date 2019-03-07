@@ -4,6 +4,8 @@ namespace Backend.Manager.Helpers.Errors
 {
     public enum ErrorTypes : int
     {
+        #region " [GENERAL SECTION] "
+
         /// <summary>
         /// Used in the Manager, Repository layers
         /// Value : CREATE ERROR.
@@ -70,6 +72,10 @@ namespace Backend.Manager.Helpers.Errors
         [Description(BackendConstants.InvalidObjectValues)]
         INVALID_OBJECT_VALUES,
 
+        #endregion
+
+        #region " [ELASTICSEARCH SECTION] "
+
         /// <summary>
         /// Values : Error while Creating the elasticseach base Index.
         /// </summary>
@@ -105,5 +111,29 @@ namespace Backend.Manager.Helpers.Errors
         /// </summary>
         [Description(BackendConstants.ErrorWhileSearchingForValues)]
         ERROR_WHILE_SEARCHING_FOR_VALUES,
+
+        /// <summary>
+        /// Values : Error Deleting the Index.
+        /// </summary>
+        [Description(BackendConstants.ErrorWhileDeletingTheIndex)]
+        ERROR_WHILE_DELETING_THE_INDEX,
+
+        #endregion
+
+        #region " [MINIO SECTION] "
+
+        /// <summary>
+        /// Values : Error while Creating the Minio Bucket.
+        /// </summary>
+        [Description(BackendConstants.ErrorWhileCreatingMinioBucket)]
+        ERROR_WHILE_CREATING_MINIO_BUCKET,
+
+        /// <summary>
+        /// Values : The bucket you specified doesn't exists. please specify a valid name.
+        /// </summary>
+        [Description(BackendConstants.ErrorMinioBucketDoesntExists)]
+        ERROR_BUCKET_DOESNT_EXISTS,
+
+        #endregion
     }
 }

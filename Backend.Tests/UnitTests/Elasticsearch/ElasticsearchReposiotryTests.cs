@@ -81,9 +81,7 @@
         public async void Rename_Index_Success()
         {
             var result = await this.EsRepository
-                .SetBucketIndex("new_test")
-                .RenameDocumentIndexAsync("test", false);
-
+                .RenameDocumentIndexAsync(this.bucketName, "new_test", false);
             Assert.True(result);
         }
 
@@ -93,6 +91,22 @@
         {
             var result = await this.EsRepository.DeleteDocumentAsync(this.Filename);
             Assert.True(result);
+        }
+
+        [Fact]
+        [Priority(10)]
+        public async void Delete_Index_Success()
+        {
+            var result_TestIndex = await this.EsRepository
+                .SetBucketIndex(this.bucketName)
+                .DeleteIndexAsync();
+
+            var result_new_testIndex = await this.EsRepository
+                .SetBucketIndex("new-test")
+                .DeleteIndexAsync();
+
+            Assert.True(result_TestIndex);
+            Assert.True(result_new_testIndex);
         }
 
         private IFormFile MoqIFormFile()
