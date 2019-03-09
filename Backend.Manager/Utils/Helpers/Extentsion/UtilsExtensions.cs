@@ -2,7 +2,7 @@
 {
     using System;
     using System.ComponentModel;
-    using Nest;
+    using System.Text.RegularExpressions;
 
     public static class UtilsExtensions
     {
@@ -93,6 +93,23 @@
             where T : struct
         {
             return Enum.IsDefined(typeof(T), self);
+        }
+
+        /// <summary>
+        /// Extension used to sanitize the bucket name value to match the Minio accepted chars.
+        /// </summary>
+        /// <param name="self">The Bucket name to sanitize.</param>
+        /// <returns>Bucket name sanitized.</returns>
+        public static string SanitizeString(this string self)
+        {
+            if (string.IsNullOrWhiteSpace(self))
+            {
+                return string.Empty;
+            }
+
+            return Regex.Replace(self, @"[^0-9a-zA-Z-_]+", string.Empty)
+                .Replace("_", "-")
+                .Trim('-');
         }
     }
 }

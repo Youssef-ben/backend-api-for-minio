@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{F461EB
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minio", "..\minio-dotnet\Minio\Minio.csproj", "{A305E88B-0642-4BC0-93EC-D83C8F1997B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{BF41FB2C-07B8-41B3-BF63-72D942D424E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF41FB2C-07B8-41B3-BF63-72D942D424E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF41FB2C-07B8-41B3-BF63-72D942D424E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A305E88B-0642-4BC0-93EC-D83C8F1997B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A305E88B-0642-4BC0-93EC-D83C8F1997B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A305E88B-0642-4BC0-93EC-D83C8F1997B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A305E88B-0642-4BC0-93EC-D83C8F1997B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

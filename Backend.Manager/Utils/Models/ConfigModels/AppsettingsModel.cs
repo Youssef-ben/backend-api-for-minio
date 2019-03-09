@@ -4,6 +4,8 @@
     {
         public ApiVersion Api { get; set; }
 
-        public ElasticsearchConfig Elasticsearch { get; set; }
+        public BackendConfiguration Minio { get; set; }
+
+        public BackendConfiguration Elasticsearch { get; set; }
     }
 }
