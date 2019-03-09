@@ -3,6 +3,7 @@
     using System;
     using System.IO;
     using System.Linq;
+    using System.Threading;
     using Backend.Manager.Repository;
     using Backend.Tests.Config;
     using Microsoft.AspNetCore.Http;
@@ -15,7 +16,8 @@
     {
         private readonly IElasticsearchRepository EsRepository;
         private readonly string Filename = "test-file.docx";
-        private readonly string bucketName = "test";
+        private readonly string bucketName = "es-test";
+        private readonly string bucketNewName = "es-new-test";
 
         public ElasticsearchReposiotryTests()
         {
@@ -41,6 +43,9 @@
                 var result = await this.EsRepository.IndexDocumentAsync(file);
                 Assert.True(result);
             }
+
+            // Used to wait for ElasticSearch to dispatch the new indexed document.
+            Thread.Sleep(2000);
         }
 
         [Fact]
@@ -81,7 +86,7 @@
         public async void Rename_Index_Success()
         {
             var result = await this.EsRepository
-                .RenameDocumentIndexAsync(this.bucketName, "new_test", false);
+                .RenameDocumentIndexAsync(this.bucketName, this.bucketNewName, false);
             Assert.True(result);
         }
 
@@ -102,7 +107,7 @@
                 .DeleteIndexAsync();
 
             var result_new_testIndex = await this.EsRepository
-                .SetBucketIndex("new-test")
+                .SetBucketIndex(this.bucketNewName)
                 .DeleteIndexAsync();
 
             Assert.True(result_TestIndex);

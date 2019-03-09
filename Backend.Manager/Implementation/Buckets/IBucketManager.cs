@@ -19,7 +19,7 @@
 
         Task<bool> RenameBucketAsync(string newBucketName);
 
-        Task DeleteBucketAsync(string bucket = "");
+        Task<bool> DeleteBucketAsync(string bucket = "");
 
         Task<bool> BucketExistsAsync();
 

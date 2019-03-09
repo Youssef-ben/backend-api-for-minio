@@ -102,6 +102,11 @@
         /// <returns>Bucket name sanitized.</returns>
         public static string SanitizeString(this string self)
         {
+            if (string.IsNullOrWhiteSpace(self))
+            {
+                return string.Empty;
+            }
+
             return Regex.Replace(self, @"[^0-9a-zA-Z-_]+", string.Empty)
                 .Replace("_", "-")
                 .Trim('-');

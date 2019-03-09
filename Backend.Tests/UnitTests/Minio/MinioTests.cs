@@ -18,6 +18,7 @@
         private readonly IBucketManager BucketManager;
         private readonly IElasticsearchRepository EsRepository;
         private readonly string BucketName = "test";
+        private readonly string BucketNewName = "-new_test^%*()=+$#@-";
 
         public MinioTests()
         {
@@ -44,7 +45,7 @@
         [Priority(2)]
         public async void Rename_bucket_Success()
         {
-            var result = await this.BucketManager.RenameBucketAsync("-new_test^%*()=+$#@-");
+            var result = await this.BucketManager.RenameBucketAsync(this.BucketNewName);
             Assert.True(result);
         }
 
@@ -54,12 +55,31 @@
         {
             try
             {
-                var result = await this.BucketManager.SetBucket("notExists").RenameBucketAsync("new_test");
+                var result = await this.BucketManager.SetBucket("bucketDoesntExists").RenameBucketAsync(this.BucketNewName);
             }
             catch (ApplicationManagerException ex)
             {
                 Assert.Contains(ex.Message, BackendConstants.ErrorMinioBucketDoesntExists);
             }
+        }
+
+        [Fact]
+        [Priority(3)]
+        public async void Get_Buckets_list_Success()
+        {
+            var result = await this.BucketManager.BucketsListAsync();
+            Assert.True(result.Count > 0);
+        }
+
+        [Fact]
+        [Priority(5)]
+        public async void Delete_Bucket_Success()
+        {
+            var result = await this.BucketManager.DeleteBucketAsync();
+            var result1 = await this.BucketManager.SetBucket(this.BucketNewName).DeleteBucketAsync();
+
+            Assert.True(result);
+            Assert.True(result1);
         }
 
         private IFormFile MoqIFormFile()

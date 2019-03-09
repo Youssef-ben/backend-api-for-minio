@@ -32,6 +32,8 @@
 
         public BucketManager SetBucket(string name)
         {
+            name = name.SanitizeString();
+
             this.bucket = string.IsNullOrWhiteSpace(name) ? this.configuration.DefaultIndex.ToLower() : name.ToLower();
 
             this.esRepository = this.esRepository.SetBucketIndex(this.bucket);
@@ -45,6 +47,7 @@
         }
 
         /// <summary>
+        /// Create a new Bucket and Elasticsearch Index.
         /// The parameter is used to determine if we need to create ElasticSearch index or not.
         /// This means that when renaming the bucket we don't want to create the ElasticSearch index in this method but
         /// instead we will be creating it from the ElasticSearch layer.
@@ -106,11 +109,18 @@
             return result;
         }
 
-        public async Task DeleteBucketAsync(string bucket = "")
+        public async Task<bool> DeleteBucketAsync(string bucket = "")
         {
             if (string.IsNullOrWhiteSpace(bucket))
             {
                 bucket = this.bucket;
+            }
+
+            bucket = bucket.SanitizeString();
+
+            if (!await this.minioClient.BucketExistsAsync(bucket))
+            {
+                return true;
             }
 
             var bucketObjects = await this.minioClient.GetBucketItemsAsync(bucket).ConfigureAwait(false);
@@ -129,11 +139,18 @@
             {
                 await this.esRepository.DeleteIndexAsync();
             }
+
+            return true;
         }
 
-        public Task<ICollection<Bucket>> BucketsListAsync(int limit = 25, int page = 1)
+        public async Task<ICollection<Bucket>> BucketsListAsync(int limit = 25, int page = 1)
         {
-            throw new System.NotImplementedException();
+            limit = limit <= 0 ? 25 : limit;
+            page = page < 1 ? 1 : page;
+
+            var result = await this.minioClient.ListBucketsAsync();
+
+            return result?.Buckets;
         }
     }
 }
