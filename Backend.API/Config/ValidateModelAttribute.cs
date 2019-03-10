@@ -1,4 +1,5 @@
-﻿using Backend.API.Controllers.Core;
+﻿using System.Linq;
+using Backend.API.Controllers.Core;
 using Backend.Manager.Helpers;
 using Backend.Manager.Helpers.Errors;
 using Backend.Manager.Helpers.Extension;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Localization;
-using System.Linq;
 
 namespace Backend.API.Config
 {

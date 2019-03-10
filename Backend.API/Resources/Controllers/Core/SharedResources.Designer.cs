@@ -124,7 +124,7 @@ namespace Backend.API.Resources.Controllers.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error while trying to handle the user [{0}] request..
+        ///   Looks up a localized string similar to Error while trying to handle the request..
         /// </summary>
         public static string GlobalUnexpectedError {
             get {

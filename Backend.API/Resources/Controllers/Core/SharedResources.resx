@@ -139,7 +139,7 @@
     <value>Vous devez spécifier les paramètres requis.</value>
   </data>
   <data name="GlobalUnexpectedError" xml:space="preserve">
-    <value>Error while trying to handle the user [{0}] request.</value>
+    <value>Error while trying to handle the request.</value>
     <comment>This Ressource is user for logging only</comment>
   </data>
   <data name="INVALID_OBJECT_VALUES" xml:space="preserve">

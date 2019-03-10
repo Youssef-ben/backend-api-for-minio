@@ -22,7 +22,7 @@
         private readonly BackendConfiguration configuration;
 
         private readonly ILogger logger;
-        private IElasticsearchRepository esRepository;
+        private IElasticsearchRepository eslasticRepository;
 
         private string bucket = string.Empty;
 
@@ -31,7 +31,7 @@
             this.logger = logger;
             this.configuration = config.Value.Minio;
 
-            this.esRepository = elasticsearchRepository;
+            this.eslasticRepository = elasticsearchRepository;
             this.minioClient = minioClient;
         }
 
@@ -41,7 +41,7 @@
 
             this.bucket = string.IsNullOrWhiteSpace(name) ? this.configuration.DefaultIndex.ToLower() : name.ToLower();
 
-            this.esRepository = this.esRepository.SetBucketIndex(this.bucket);
+            this.eslasticRepository = this.eslasticRepository.SetBucketIndex(this.bucket);
 
             return this;
         }
@@ -80,7 +80,7 @@
 
             await this.minioClient.RemoveObjectAsync(this.bucket, filename);
 
-            var result = await this.esRepository.DeleteDocumentAsync(filename);
+            var result = await this.eslasticRepository.DeleteDocumentAsync(filename);
 
             return result;
         }
@@ -121,13 +121,16 @@
             var fileMemoryStream = new MemoryStream();
 
             // Get file stream
-            await this.minioClient.GetObjectAsync(this.bucket, filename, (stream) =>
-            {
-                stream.CopyTo(fileMemoryStream);
-            });
+            await this.minioClient.GetObjectAsync(
+                this.bucket,
+                filename,
+                (stream) =>
+                {
+                    stream.CopyTo(fileMemoryStream);
+                });
 
             // Get Extra info
-            var result = (await this.esRepository.SearchByNameAsync(filename)).FirstOrDefault();
+            var result = (await this.eslasticRepository.SearchByNameAsync(filename)).FirstOrDefault();
 
             return new CustomAttachment()
             {
@@ -156,7 +159,7 @@
                     file.ContentType);
             }
 
-            var result = await this.esRepository.IndexDocumentAsync(file);
+            var result = await this.eslasticRepository.IndexDocumentAsync(file);
 
             return result;
         }

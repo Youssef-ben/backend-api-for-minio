@@ -1,4 +1,5 @@
 ﻿using Backend.API.Config;
+using Backend.Manager.Config;
 using Backend.Manager.Utils.Models.ConfigModels;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -20,10 +21,10 @@ namespace Backend.API
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
-        /// <param name="configuration"></param>
+        /// <param name="configuration">Current Config</param>
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         /// <summary>
@@ -31,7 +32,6 @@ namespace Backend.API
         /// </summary>
         /// <value>The current application configuration.</value>
         public IConfiguration Configuration { get; }
-
 
         /// <summary>
         /// Configures services for the application.
@@ -75,11 +75,11 @@ namespace Backend.API
                 o.ReportApiVersions = true;
             });
 
-            // Create an instance of IOption for the {Elasticsearch} section of the appsettings
-            // TODO : Validate The Appsetting Modal
-            services.Configure<AppsettingsModel>(Configuration.GetSection("Elasticsearch"));
+            // Create an instance of IOption for the {Settings} section of the appsettings.
+            services.Configure<AppsettingsModel>(this.Configuration.GetSection("Settings"));
 
             // Register Projects Dependency injection
+            ManagerIoc.Register(services, this.Configuration);
             SwaggerConfig.Register(services);
         }
 

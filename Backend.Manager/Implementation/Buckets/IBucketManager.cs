@@ -17,6 +17,8 @@
         /// <returns>True if all went as expected, false otherwise.</returns>
         Task<bool> CreateBucketAsync(bool shouldCreateEsIndex = true);
 
+        Task<Bucket> GetBucketAsync();
+
         Task<bool> RenameBucketAsync(string newBucketName);
 
         Task<bool> DeleteBucketAsync(string bucket = "");
