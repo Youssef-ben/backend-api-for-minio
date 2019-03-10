@@ -14,9 +14,9 @@
     public class BucketManager : IBucketManager
     {
         private readonly MinioClient minioClient;
-        private readonly ILogger logger;
         private readonly BackendConfiguration configuration;
 
+        private readonly ILogger logger;
         private IElasticsearchRepository esRepository;
 
         private string bucket = string.Empty;
@@ -104,7 +104,7 @@
             await this.DeleteBucketAsync(oldBucketName);
 
             // Re-index in elasticsearch.
-            var result = await this.esRepository.RenameDocumentIndexAsync(oldBucketName, newBucketName);
+            var result = await this.esRepository.RenameIndexAsync(oldBucketName, newBucketName);
 
             return result;
         }
