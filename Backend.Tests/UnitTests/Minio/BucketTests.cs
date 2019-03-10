@@ -1,5 +1,6 @@
 ﻿namespace Backend.Tests.UnitTests.Minio
 {
+    using Backend.Manager.Config;
     using Backend.Manager.Helpers;
     using Backend.Manager.Helpers.Errors.CustomErrors;
     using Backend.Manager.Implementation.Buckets;

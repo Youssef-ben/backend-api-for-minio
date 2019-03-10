@@ -1,4 +1,6 @@
-﻿using Backend.Manager.Helpers;
+﻿using System;
+using System.Runtime.CompilerServices;
+using Backend.Manager.Helpers;
 using Backend.Manager.Helpers.Errors;
 using Backend.Manager.Helpers.Errors.CustomErrors;
 using Backend.Manager.Helpers.Extension;
@@ -6,8 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Runtime.CompilerServices;
 
 namespace Backend.API.Controllers.Core
 {
@@ -47,8 +47,7 @@ namespace Backend.API.Controllers.Core
 
         protected IActionResult LogAndReturnCustomError(Exception ex, ILogger logger, [CallerMemberName]string methodName = null)
         {
-            var userMessage = string.Format(this.SharedLocalizer.GetString("GlobalUnexpectedError").Value, Guid.NewGuid().ToString());
-            logger.LogError(ex, userMessage);
+            logger.LogError(ex, this.SharedLocalizer.GetString("GlobalUnexpectedError").Value);
             return this.SetErrorResponse(ex, this.SharedLocalizer.GetString(ErrorTypes.UNEXPECTED_ERROR.ToString()).Value, $"{BackendLayersNames.API}.{methodName}");
         }
 

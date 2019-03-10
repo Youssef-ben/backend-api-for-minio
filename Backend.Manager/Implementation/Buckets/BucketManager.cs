@@ -1,6 +1,7 @@
 ﻿namespace Backend.Manager.Implementation.Buckets
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Backend.Manager.Helpers.Errors;
     using Backend.Manager.Helpers.Extension;
@@ -17,7 +18,7 @@
         private readonly BackendConfiguration configuration;
 
         private readonly ILogger logger;
-        private IElasticsearchRepository esRepository;
+        private IElasticsearchRepository eslasticRepository;
 
         private string bucket = string.Empty;
 
@@ -26,7 +27,7 @@
             this.logger = logger;
             this.configuration = config.Value.Minio;
 
-            this.esRepository = elasticsearchRepository;
+            this.eslasticRepository = elasticsearchRepository;
             this.minioClient = minioClient;
         }
 
@@ -36,7 +37,7 @@
 
             this.bucket = string.IsNullOrWhiteSpace(name) ? this.configuration.DefaultIndex.ToLower() : name.ToLower();
 
-            this.esRepository = this.esRepository.SetBucketIndex(this.bucket);
+            this.eslasticRepository = this.eslasticRepository.SetBucketIndex(this.bucket);
 
             return this;
         }
@@ -63,10 +64,22 @@
 
             if (shouldCreateEsIndex)
             {
-                await this.esRepository.CreateIndexIfNotExists();
+                await this.eslasticRepository.CreateIndexIfNotExists();
             }
 
             return true;
+        }
+
+        public async Task<Bucket> GetBucketAsync()
+        {
+            if (!await this.minioClient.BucketExistsAsync(this.bucket))
+            {
+                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_BUCKET_DOESNT_EXISTS, new { Bucket = this.bucket });
+            }
+
+            return (await this.BucketsListAsync())
+                .Where(b => b.Name.Equals(this.bucket))
+                .FirstOrDefault();
         }
 
         public async Task<bool> RenameBucketAsync(string newBucketName)
@@ -104,7 +117,7 @@
             await this.DeleteBucketAsync(oldBucketName);
 
             // Re-index in elasticsearch.
-            var result = await this.esRepository.RenameIndexAsync(oldBucketName, newBucketName);
+            var result = await this.eslasticRepository.RenameIndexAsync(oldBucketName, newBucketName);
 
             return result;
         }
@@ -137,7 +150,7 @@
              */
             if (this.bucket.Equals(bucket))
             {
-                await this.esRepository.DeleteIndexAsync();
+                await this.eslasticRepository.DeleteIndexAsync();
             }
 
             return true;
