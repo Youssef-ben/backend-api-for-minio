@@ -133,57 +133,7 @@
                 Content = base64File
             };
 
-            var result = await this.esClient.IndexAsync(
-               documentToIndex,
-               i => i
-               .Index(this.bucketIndex)
-               .Pipeline(this.bucketPipelineIndex));
-
-            if (!result.IsValid)
-            {
-                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { result.DebugInformation });
-            }
-
-            return true;
-        }
-
-        public async Task<bool> RenameDocumentIndexAsync(string oldIndex, string newIndex, bool deleteOldIndex = true)
-        {
-            // Always set the Current Index to the Old one
-            this.SetBucketIndex(oldIndex);
-            oldIndex = this.bucketIndex;
-            var ingestPipeline = this.bucketPipelineIndex;
-
-            var isNotEmpty = await this.SearchByContentAsync(string.Empty);
-
-            // Set the Current Index to the new Name.
-            this.SetBucketIndex(newIndex);
-
-            if ((await this.esClient.IndexExistsAsync(this.bucketIndex)).Exists)
-            {
-                return true;
-            }
-
-            if (isNotEmpty.Count > 0)
-            {
-                await this.ReIndexAsync(oldIndex);
-            }
-            else
-            {
-                await this.CreateIndexIfNotExists();
-            }
-
-            if (deleteOldIndex)
-            {
-                var isDeleted = await this.esClient.DeleteIndexAsync(oldIndex);
-                var isPipeLIneDeleted = await this.esClient.DeletePipelineAsync(ingestPipeline);
-                if (!isDeleted.IsValid || !isPipeLIneDeleted.IsValid)
-                {
-                    throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { isDeleted.DebugInformation });
-                }
-            }
-
-            return true;
+            return await this.CreateIndexForDocumentAsync(documentToIndex);
         }
 
         public async Task<bool> UpdateDocumentAsync(IFormFile document)
@@ -295,6 +245,45 @@
             }
         }
 
+        public async Task<bool> RenameIndexAsync(string oldIndex, string newIndex, bool deleteOldIndex = true)
+        {
+            // Always set the Current Index to the Old one
+            this.SetBucketIndex(oldIndex);
+            oldIndex = this.bucketIndex;
+            var ingestPipeline = this.bucketPipelineIndex;
+
+            var isNotEmpty = await this.SearchByContentAsync(string.Empty);
+
+            // Set the Current Index to the new Name.
+            this.SetBucketIndex(newIndex);
+
+            if ((await this.esClient.IndexExistsAsync(this.bucketIndex)).Exists)
+            {
+                return true;
+            }
+
+            if (isNotEmpty.Count > 0)
+            {
+                await this.ReIndexAsync(oldIndex);
+            }
+            else
+            {
+                await this.CreateIndexIfNotExists();
+            }
+
+            if (deleteOldIndex)
+            {
+                var isDeleted = await this.esClient.DeleteIndexAsync(oldIndex);
+                var isPipeLIneDeleted = await this.esClient.DeletePipelineAsync(ingestPipeline);
+                if (!isDeleted.IsValid || !isPipeLIneDeleted.IsValid)
+                {
+                    throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { isDeleted.DebugInformation });
+                }
+            }
+
+            return true;
+        }
+
         private async Task CreateAttachementPipeline()
         {
             if ((await this.esClient.GetPipelineAsync(new GetPipelineRequest(this.bucketPipelineIndex))).IsValid)
@@ -343,6 +332,22 @@
                 Value = $"*{value}*", // When adding `*` in the begining and ending of the value it add a hit to the elsaticSearch performance.
                 Rewrite = MultiTermQueryRewrite.TopTermsBoost(10)
             };
+        }
+
+        private async Task<bool> CreateIndexForDocumentAsync(Document document)
+        {
+            var result = await this.esClient.IndexAsync(
+               document,
+               i => i
+               .Index(this.bucketIndex)
+               .Pipeline(this.bucketPipelineIndex));
+
+            if (!result.IsValid)
+            {
+                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { result.DebugInformation });
+            }
+
+            return true;
         }
     }
 }

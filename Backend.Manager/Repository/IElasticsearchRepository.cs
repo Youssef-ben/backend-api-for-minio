@@ -21,7 +21,7 @@
 
         Task<bool> IndexDocumentAsync(IFormFile document);
 
-        Task<bool> RenameDocumentIndexAsync(string oldIndex, string newIndex, bool deleteOldIndex = true);
+        Task<bool> RenameIndexAsync(string oldIndex, string newIndex, bool deleteOldIndex = true);
 
         Task<bool> UpdateDocumentAsync(IFormFile document);
 

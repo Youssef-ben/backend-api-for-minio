@@ -1,13 +1,9 @@
 ﻿namespace Backend.Tests.UnitTests.Elasticsearch
 {
-    using System;
-    using System.IO;
     using System.Linq;
     using System.Threading;
     using Backend.Manager.Repository;
     using Backend.Tests.Config;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Internal;
     using Xunit;
     using Xunit.Priority;
 
@@ -15,7 +11,7 @@
     public class ElasticsearchReposiotryTests
     {
         private readonly IElasticsearchRepository EsRepository;
-        private readonly string Filename = "test-file.docx";
+        private readonly string Filename = "test-file.pdf";
         private readonly string bucketName = "es-test";
         private readonly string bucketNewName = "es-new-test";
 
@@ -37,7 +33,7 @@
         [Priority(1)]
         public async void Index_Document_Success()
         {
-            var file = this.MoqIFormFile();
+            var file = SharedMethods.MoqIFormFile(this.Filename);
             if (!await this.EsRepository.DocumentExistsAsync(this.Filename))
             {
                 var result = await this.EsRepository.IndexDocumentAsync(file);
@@ -52,7 +48,7 @@
         [Priority(2)]
         public async void Update_Document_Success()
         {
-            var file = this.MoqIFormFile();
+            var file = SharedMethods.MoqIFormFile(this.Filename);
             var result = await this.EsRepository.UpdateDocumentAsync(file);
             Assert.True(result);
         }
@@ -86,12 +82,12 @@
         public async void Rename_Index_Success()
         {
             var result = await this.EsRepository
-                .RenameDocumentIndexAsync(this.bucketName, this.bucketNewName, false);
+                .RenameIndexAsync(this.bucketName, this.bucketNewName, false);
             Assert.True(result);
         }
 
         [Fact]
-        [Priority(5)]
+        [Priority(6)]
         public async void Delete_Document_Success()
         {
             var result = await this.EsRepository.DeleteDocumentAsync(this.Filename);
@@ -112,17 +108,6 @@
 
             Assert.True(result_TestIndex);
             Assert.True(result_new_testIndex);
-        }
-
-        private IFormFile MoqIFormFile()
-        {
-            var startup = AppDomain.CurrentDomain.BaseDirectory;
-
-            // Using a real file is the unit tests is not recommended. see Mock.
-            var stream = new MemoryStream(File.ReadAllBytes(Path.Combine(startup, $"TestFiles/{Filename}")));
-
-            IFormFile formFile = new FormFile(stream, 0, stream.Length, Filename.Split('.')[0], Filename);
-            return formFile;
         }
     }
 }

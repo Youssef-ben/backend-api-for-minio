@@ -42,7 +42,6 @@
 
   <ItemGroup>
     <Folder Include="Implementation\Searcher\" />
-    <Folder Include="Implementation\Uploader\" />
   </ItemGroup>
 
   <ItemGroup>
