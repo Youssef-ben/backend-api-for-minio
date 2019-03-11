@@ -62,11 +62,27 @@
             return true;
         }
 
-        public async Task<ICollection<Item>> ListBucketFilesAsync()
+        public async Task<ICollection<Item>> ListBucketFilesAsync(int page = 1, int size = 20)
         {
             await this.CurrentBucketExistsAsync();
 
-            return await this.minioClient.GetBucketItemsAsync(this.bucket);
+            var result = (await this.minioClient.GetBucketItemsAsync(this.bucket))
+                .Skip(size * (page - 1))
+                .Take(size)
+                .ToList();
+
+            return result;
+        }
+
+        public async Task<Item> GetFileAsync(string name)
+        {
+            await this.CurrentBucketExistsAsync();
+
+            var result = (await this.minioClient.GetBucketItemsAsync(this.bucket))
+                .Where(f => f.Key == name)
+                ?.FirstOrDefault();
+
+            return result;
         }
 
         public async Task<bool> RemoveFileAsync(string filename)
@@ -85,7 +101,7 @@
             return result;
         }
 
-        public async Task<bool> UploadFileAsync(IFormFile file)
+        public async Task<Item> UploadFileAsync(IFormFile file)
         {
             await this.CurrentBucketExistsAsync();
 
@@ -94,10 +110,16 @@
                 throw this.logger.LogAndThrowException(ErrorTypes.ALREADY_EXISTS, new { File = file.FileName });
             }
 
-            return await this.UploadDocumentAsync(file);
+            var result = await this.UploadDocumentAsync(file);
+            if (!result)
+            {
+                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { File = file.FileName });
+            }
+
+            return await this.GetFileAsync(file.FileName);
         }
 
-        public async Task<bool> UpdateFileAsync(IFormFile file)
+        public async Task<Item> UpdateFileAsync(IFormFile file)
         {
             await this.CurrentBucketExistsAsync();
 
@@ -106,10 +128,16 @@
                 throw this.logger.LogAndThrowException(ErrorTypes.NOT_FOUND, new { File = file.FileName });
             }
 
-            return await this.UploadDocumentAsync(file);
+            var result = await this.UploadDocumentAsync(file);
+            if (!result)
+            {
+                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { File = file.FileName });
+            }
+
+            return await this.GetFileAsync(file.FileName);
         }
 
-        public async Task<CustomAttachment> DownloadFileAsync(string filename)
+        public async Task<MinioFile> DownloadFileAsync(string filename)
         {
             await this.CurrentBucketExistsAsync();
 
@@ -132,11 +160,13 @@
             // Get Extra info
             var result = (await this.eslasticRepository.SearchByNameAsync(filename)).FirstOrDefault();
 
-            return new CustomAttachment()
+            fileMemoryStream.Position = 0;
+
+            return new MinioFile()
             {
-                AttachmentName = filename,
-                AttachementType = result.Attachment.ContentType,
-                AttachmentContent = fileMemoryStream,
+                Name = filename,
+                Type = result.Attachment.ContentType,
+                Content = fileMemoryStream,
             };
         }
 

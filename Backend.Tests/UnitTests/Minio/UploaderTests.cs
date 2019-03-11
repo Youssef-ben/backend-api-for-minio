@@ -1,6 +1,7 @@
 ﻿namespace Backend.Tests.UnitTests.Minio
 {
     using System.Threading;
+    using Backend.Manager.Config;
     using Backend.Manager.Helpers;
     using Backend.Manager.Helpers.Errors.CustomErrors;
     using Backend.Manager.Implementation.Buckets;
@@ -50,7 +51,7 @@
             var file = SharedMethods.MoqIFormFile(this.Filename);
             var result = await this.UploaderManager.UploadFileAsync(file);
 
-            Assert.True(result);
+            Assert.NotNull(result);
 
             // Used to wait for ElasticSearch to dispatch the new indexed document.
             Thread.Sleep(2000);

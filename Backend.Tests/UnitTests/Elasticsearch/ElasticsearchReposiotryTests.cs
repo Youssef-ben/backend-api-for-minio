@@ -2,6 +2,7 @@
 {
     using System.Linq;
     using System.Threading;
+    using Backend.Manager.Config;
     using Backend.Manager.Repository;
     using Backend.Tests.Config;
     using Xunit;
