@@ -88,6 +88,26 @@
             return result;
         }
 
+        public async Task<MinioFile> GetFileContentAsync(string name)
+        {
+            await this.CurrentBucketExistsAsync();
+
+            var result = (await this.eslasticRepository.SearchByNameAsync(name))
+                ?.FirstOrDefault();
+
+            if (result is null)
+            {
+                throw this.logger.LogAndThrowException(ErrorTypes.NOT_FOUND, new { File = name });
+            }
+
+            return new MinioFile()
+            {
+                Name = result.Name,
+                Type = result.Attachment.ContentType,
+                Content = result.Attachment.Content,
+            };
+        }
+
         public async Task<bool> RemoveFileAsync(string filename)
         {
             await this.CurrentBucketExistsAsync();
@@ -169,7 +189,7 @@
             {
                 Name = filename,
                 Type = result.Attachment.ContentType,
-                Content = fileMemoryStream,
+                StreamContent = fileMemoryStream,
             };
         }
 

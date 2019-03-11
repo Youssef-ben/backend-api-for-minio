@@ -1,13 +1,17 @@
 ﻿using System.IO;
+using Newtonsoft.Json;
 
 namespace Backend.Manager.Utils.Models
 {
     public class MinioFile
     {
-        public MemoryStream Content { get; set; }
+        [JsonIgnore]
+        public MemoryStream StreamContent { get; set; }
 
         public string Type { get; set; }
 
         public string Name { get; set; }
+
+        public string Content { get; set; }
     }
 }

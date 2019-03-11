@@ -22,6 +22,8 @@ namespace Backend.Manager.Implementation.Uploader
 
         Task<Item> GetFileAsync(string name);
 
+        Task<MinioFile> GetFileContentAsync(string name);
+
         Task<ICollection<Item>> ListBucketFilesAsync(int page = 1, int size = 20);
     }
 }

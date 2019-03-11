@@ -48,7 +48,7 @@ namespace Backend.API.Controllers.V1
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return this.LogAndReturnCustomError(this.logger, StatusCodes.Status400BadRequest, ErrorTypes.CREATE);
+                return this.LogAndReturnCustomError(this.logger, StatusCodes.Status400BadRequest, ErrorTypes.FETCH);
             }
 
             try

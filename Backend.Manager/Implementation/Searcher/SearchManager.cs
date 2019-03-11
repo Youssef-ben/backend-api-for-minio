@@ -48,6 +48,11 @@
         // TODO : If we add a database support, we can search user buckets instead of all the buckets(which is not secure)
         public async Task<ICollection<string>> AutoCompleteBucketsByNameAsync(string term, int page = 0, int size = 20)
         {
+            if (string.IsNullOrWhiteSpace(term))
+            {
+                term = string.Empty;
+            }
+
             size = size <= 0 ? 20 : size;
             page = page < 0 ? 0 : page;
 
@@ -63,6 +68,11 @@
 
         public async Task<ICollection<string>> AutoCompleteFilesByNameAsync(string term, int page = 0, int size = 20)
         {
+            if (string.IsNullOrWhiteSpace(term))
+            {
+                term = string.Empty;
+            }
+
             size = size <= 0 ? 20 : size;
             page = page < 0 ? 0 : page;
 
@@ -73,6 +83,11 @@
 
         public async Task<ICollection<Item>> SearchByNameAsync(string term, int page = 0, int size = 20)
         {
+            if (string.IsNullOrWhiteSpace(term))
+            {
+                term = string.Empty;
+            }
+
             size = size <= 0 ? 20 : size;
             page = page < 0 ? 0 : page;
 
@@ -87,6 +102,11 @@
 
         public async Task<ICollection<Item>> SearchByContentAsync(string term, int page = 0, int size = 20)
         {
+            if (string.IsNullOrWhiteSpace(term))
+            {
+                term = string.Empty;
+            }
+
             size = size <= 0 ? 20 : size;
             page = page < 0 ? 0 : page;
 
