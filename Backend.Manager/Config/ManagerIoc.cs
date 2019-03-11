@@ -2,6 +2,7 @@
 {
     using System;
     using Backend.Manager.Implementation.Buckets;
+    using Backend.Manager.Implementation.Searcher;
     using Backend.Manager.Implementation.Uploader;
     using Backend.Manager.Repository;
     using Backend.Manager.Utils.Helpers.ConfigExtensions;
@@ -23,10 +24,9 @@
             services.AddSingleton<MinioClient>(config.Minio.GetMinioClient());
 
             services.AddTransient<IElasticsearchRepository, ElasticSearchRepository>();
-
             services.AddTransient<IBucketManager, BucketManager>();
-
             services.AddTransient<IUploaderManager, UploaderManager>();
+            services.AddTransient<ISearchManager, SearchManager>();
         }
 
         public static ElasticClient GetElasticSearchClient(this BackendConfiguration self)

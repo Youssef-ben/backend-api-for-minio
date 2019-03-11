@@ -62,12 +62,15 @@
             return true;
         }
 
-        public async Task<ICollection<Item>> ListBucketFilesAsync(int page = 1, int size = 20)
+        public async Task<ICollection<Item>> ListBucketFilesAsync(int page = 0, int size = 20)
         {
+            size = size <= 0 ? 20 : size;
+            page = page < 0 ? 0 : page;
+
             await this.CurrentBucketExistsAsync();
 
             var result = (await this.minioClient.GetBucketItemsAsync(this.bucket))
-                .Skip(size * (page - 1))
+                .Skip(size * page)
                 .Take(size)
                 .ToList();
 

@@ -15,6 +15,10 @@
 
         public string Content { get; set; }
 
+        public string LastModified { get; set; }
+
+        public ulong Size { get; set; }
+
         public Attachment Attachment { get; set; }
     }
 }
