@@ -130,6 +130,8 @@
                 Id = document.FileName,
                 Name = document.FileName,
                 NameCompletion = document.FileName,
+                LastModified = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                Size = (ulong)document.Length,
                 Content = base64File
             };
 

@@ -159,7 +159,7 @@
         public async Task<ICollection<Bucket>> BucketsListAsync(int limit = 25, int page = 1)
         {
             limit = limit <= 0 ? 25 : limit;
-            page = page < 1 ? 1 : page;
+            page = page < 0 ? 0 : page;
 
             var result = await this.minioClient.ListBucketsAsync();
 
