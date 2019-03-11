@@ -91,6 +91,16 @@
 
         [Fact]
         [Priority(5)]
+        public async void Get_File_Content_Success()
+        {
+            var result = await this.UploaderManager.GetFileContentAsync(this.Filename);
+
+            Assert.NotNull(result);
+            Assert.Contains("nest".ToLower(), result.Content.ToLower());
+        }
+
+        [Fact]
+        [Priority(10)]
         public async void Remove_File_Success()
         {
             var result = await this.UploaderManager.RemoveFileAsync(this.Filename);

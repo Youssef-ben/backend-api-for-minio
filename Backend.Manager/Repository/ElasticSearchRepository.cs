@@ -49,7 +49,7 @@
                     .Size(limit)
                     .Skip(page)
                     .Query(q => q
-                        .Match(m => m
+                        .MatchPhrase(m => m
                            .Field(d => d.Name)
                            .Query(value))));
 
