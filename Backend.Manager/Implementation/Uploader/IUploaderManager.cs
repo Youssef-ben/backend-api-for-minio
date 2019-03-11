@@ -10,16 +10,18 @@ namespace Backend.Manager.Implementation.Uploader
     {
         UploaderManager SetBucket(string bucket);
 
-        Task<bool> UploadFileAsync(IFormFile file);
+        Task<Item> UploadFileAsync(IFormFile file);
 
-        Task<CustomAttachment> DownloadFileAsync(string filename);
+        Task<Item> UpdateFileAsync(IFormFile file);
 
-        Task<bool> UpdateFileAsync(IFormFile file);
+        Task<MinioFile> DownloadFileAsync(string filename);
 
         Task<bool> FileExistsAsync(string filename);
 
         Task<bool> RemoveFileAsync(string filename);
 
-        Task<ICollection<Item>> ListBucketFilesAsync();
+        Task<Item> GetFileAsync(string name);
+
+        Task<ICollection<Item>> ListBucketFilesAsync(int page = 1, int size = 20);
     }
 }
