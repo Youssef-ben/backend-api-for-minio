@@ -1,8 +1,9 @@
 # API for the object storage server (Minio)
 Backend API, is a single access point to manage your Object Storage Server (minio).
 
-## Tools and Technologies.
-##### I. Technologies :
+## Tools and Technologies
+
+### I. Technologies :
    - **Asp.Net Core 2.1 LTS**.
    - **XUnit** : Testing framework.
    - **Swagger** : Documentations for the Web API.
@@ -11,13 +12,14 @@ Backend API, is a single access point to manage your Object Storage Server (mini
    - **Elasticsearch** : Search engine.
    - **Docker** : Container platform.
 
-##### II. Tools :
+### II. Tools :
    - **Visual Studio 2017 Community - v15.x**
    - **Postman**.
    - **Make tool**
 
 ## Getting started.
-This section will define the development rules.
+
+### Rules :
 * In the API Project always use the Manager library for the bussiness rules.
 * [General Branching Rules with Git.](https://gist.github.com/digitaljhelms/4287848)
 * [General Versionnig Rules.](https://semver.org/)
@@ -25,8 +27,29 @@ This section will define the development rules.
 * [API Best practices.](https://medium.com/@schneidenbach/restful-api-best-practices-and-common-pitfalls-7a83ba3763b5)
 * [Guide for declaring issues.](https://guides.github.com/features/issues/)
 
+### Useful commands
+This commands are based on the Makefile. for more informations see [MakeFile.](https://github.com/Youssef-ben/backend-api-for-minio/blob/dev/Makefile)
 
-Install this in elastic search container
- bin/elasticsearch-plugin install ingest-attachment
+```bash
+## Init the needed Docker containers for development mode.
+## This will create the containers and install elsaticsearch {ingest-attachment} plugin.
+make init-docker
 
-Restart elasticsearch
+## Start all containers
+make start-docker
+
+## Stop all containers
+make stop-docker
+
+## Restart all containers
+make restart-docker
+
+## Destroy all the containers
+make nuke
+
+## Build the API image and start the container
+make init-docker-dev
+
+## Start the containers only
+make start-docker-dev
+```

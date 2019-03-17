@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace Backend.API
 {
@@ -34,8 +28,7 @@ namespace Backend.API
              WebHost.CreateDefaultBuilder(args)
              .ConfigureAppConfiguration((hostingContext, config) =>
              {
-                 var rootContent = IsLocal(hostingContext.HostingEnvironment) ? "\\..\\Settings\\" : string.Empty;
-                 config.SetBasePath($"{hostingContext.HostingEnvironment.ContentRootPath}{rootContent}");
+                 config.SetBasePath(Path.Combine(hostingContext.HostingEnvironment.ContentRootPath, "..", "Settings"));
 
                  config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
