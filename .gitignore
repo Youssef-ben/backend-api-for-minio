@@ -42,6 +42,6 @@ Thumbs.db
 *.dotCover
 .vscode
 
-
 Data/
 Logs/
+Settings/appsettings.Local.json

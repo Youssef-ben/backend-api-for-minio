@@ -1,8 +1,6 @@
 ## Base Configuration
 FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
 WORKDIR /app
-ENV ASPNETCORE_ENVIRONMENT=Local
-ENV ASPNETCORE_URLS http://*:9203
 EXPOSE 9203
 
 ## Restore and build the project

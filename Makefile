@@ -1,10 +1,11 @@
 .PHONY: init-docker start-docker stop-docker restart-docker nuke  init-docker-dev start-docker-dev refresh-api-dev
 
 EsContainerName='backend-elasticsearch'
+backendContainerName='backend-api'
 
 BaseCompose="docker-compose.yml"
-DevCompose="docker-compose.dev.yml"
-ProdCompose="docker-compose.prod.yml"
+DevCompose="docker-compose.development.yml"
+ProdCompose="docker-compose.production.yml"
 
 init-docker:
 	@echo "Creating and starting the containers using docker-compose..."
@@ -34,8 +35,8 @@ nuke:
 	@docker-compose -f $(BaseCompose) -f $(DevCompose) -f $(ProdCompose) down
 
 init-docker-dev:
-	@echo "starting Docker for Environment={Development}..."
-	@docker build -t backend-api .
+	@echo "starting Docker for the Environment={Development}..."
+	@docker build -t $(backendContainerName)-dev .
 	@docker-compose -f $(BaseCompose) -f $(DevCompose) up -d 
 
 	@echo "installing Elasticsearch ingest-attachement plugin..."
@@ -48,11 +49,11 @@ init-docker-dev:
 	@echo "done."
 
 start-docker-dev:
-	@echo "starting Docker for Environment={Development}..."
-	@docker build -t backend-api .
+	@echo "starting Docker for the Environment={Development}..."
+	@docker build -t $(backendContainerName)-dev .
 	@docker-compose -f $(BaseCompose) -f $(DevCompose) up -d 
 
 refresh-api-dev:
-	@echo "Refreshing the backend API with Environment={Development}..."
-	@docker build -t backend-api .
-	@docker-compose -f $(BaseCompose) -f $(DevCompose) up -d --no-deps --build backend-api
+	@echo "Refreshing the backend API for the Environment={Development}..."
+	@docker build -t $(backendContainerName)-dev .
+	@docker-compose -f $(BaseCompose) -f $(DevCompose) up -d --no-deps --build $(backendContainerName)-dev

@@ -28,7 +28,7 @@ services:
         soft: -1
         hard: -1
     ports:
-      - 9200:9200
+      - 9100:9200
     volumes:
       - 'data-es:/usr/share/elasticsearch/data'
     networks:
@@ -39,12 +39,12 @@ services:
     container_name: backend-kibana
     environment:
       - SERVER_NAME:"kibana.backend.org"
-      - ELASTICSEARCH_HOSTS:http://backend-elasticsearch:9200
-      - ELASTICSEARCH_URL:http://backend-elasticsearch:9200
+      - ELASTICSEARCH_HOSTS:http://backend-elasticsearch:9100
+      - ELASTICSEARCH_URL:http://backend-elasticsearch:9100
     depends_on:
       - elasticsearch
     ports:
-      - 9201:5601
+      - 9101:5601
     volumes:
       - './data/kibana:/usr/share/elasticsearch/data'
     networks:
@@ -56,10 +56,10 @@ services:
     volumes:
      - './data/minio:/data'
     ports:
-     - 9202:9000
+     - 9102:9000
     environment:
-     MINIO_ACCESS_KEY: tester
-     MINIO_SECRET_KEY: tester123456789
+     MINIO_ACCESS_KEY: localTest
+     MINIO_SECRET_KEY: pd1d3758d68240e88d5a288e398f1b46
     networks:
       - backend-network
     command: server /data
