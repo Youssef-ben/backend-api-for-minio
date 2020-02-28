@@ -177,11 +177,27 @@
             var observable = this.minioClient.ListObjectsAsync(this.bucket);
 
             var subscription = observable.Subscribe(
-                    item => bucketItems.Add(item),
+                    item =>
+                    {
+                        if (item != null)
+                        {
+                            bucketItems.Add(item);
+                        }
+                    },
                     ex => Debug.WriteLine($"OnError: {ex}"),
                     () => Debug.WriteLine($"Listed all objects in bucket {this.bucket}\n"));
 
-            observable.Wait();
+            try
+            {
+                observable.Wait();
+            }
+            catch (Exception ex)
+            {
+                if (!ex.Message.Contains("Sequence contains no elements."))
+                {
+                    throw ex;
+                }
+            }
 
             return bucketItems;
         }

@@ -1,6 +1,5 @@
 ﻿namespace Backend.Tests.UnitTests.Elasticsearch
 {
-    using System.Linq;
     using System.Threading;
     using Backend.Manager.Config;
     using Backend.Manager.Repository;
@@ -52,14 +51,6 @@
             var file = SharedMethods.MoqIFormFile(this.Filename);
             var result = await this.EsRepository.UpdateDocumentAsync(file);
             Assert.True(result);
-        }
-
-        [Fact]
-        [Priority(3)]
-        public async void Search_By_Name_Success()
-        {
-            var result = await this.EsRepository.SearchByNameAsync(this.Filename.Split('.').FirstOrDefault());
-            Assert.True(result.Count > 0);
         }
 
         [Fact]
