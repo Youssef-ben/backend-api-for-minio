@@ -16,19 +16,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-using Minio.DataModel;
-using RestSharp;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Reactive.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using Minio.DataModel;
 using Minio.Exceptions;
-using System.Globalization;
-using System.Reactive.Linq;
-using System.Threading;
-using System.Text;
+using RestSharp;
 
 namespace Minio
 {
@@ -42,7 +42,7 @@ namespace Minio
         /// <returns>Task with an iterator lazily populated with objects</returns>
         public async Task<ListAllMyBucketsResult> ListBucketsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            var request= await this.CreateRequest(Method.GET,resourcePath:"/").ConfigureAwait(false);
+            var request = await this.CreateRequest(Method.GET, resourcePath: "/").ConfigureAwait(false);
             var response = await this.ExecuteTaskAsync(this.NoErrorHandlers, request, cancellationToken).ConfigureAwait(false);
 
             ListAllMyBucketsResult bucketList = new ListAllMyBucketsResult();
@@ -72,9 +72,9 @@ namespace Minio
                     location = this.Region;
                 }
             }
-          
+
             // Set Target URL
-            Uri requestUrl = RequestUtil.MakeTargetURL(this.BaseUrl, this.Secure,location);
+            Uri requestUrl = RequestUtil.MakeTargetURL(this.BaseUrl, this.Secure, location);
             SetTargetURL(requestUrl);
 
             var request = new RestRequest("/" + bucketName, Method.PUT)
@@ -215,7 +215,7 @@ namespace Minio
                                                      bucketName,
                                                      resourcePath: "?" + query)
                                         .ConfigureAwait(false);
-            
+
             var response = await this.ExecuteTaskAsync(this.NoErrorHandlers, request, cancellationToken).ConfigureAwait(false);
 
             var contentBytes = Encoding.UTF8.GetBytes(response.Content);
@@ -308,7 +308,7 @@ namespace Minio
                                                resourcePath: "?notification")
                                     .ConfigureAwait(false);
             BucketNotification notification = null;
-           
+
             var response = await this.ExecuteTaskAsync(this.NoErrorHandlers, request, cancellationToken).ConfigureAwait(false);
             var contentBytes = Encoding.UTF8.GetBytes(response.Content);
             using (var stream = new MemoryStream(contentBytes))
@@ -317,7 +317,7 @@ namespace Minio
                 return notification;
             }
         }
-        
+
         /// <summary>
         /// Sets the notification configuration for this bucket
         /// </summary>
@@ -331,11 +331,11 @@ namespace Minio
             var request = await this.CreateRequest(Method.PUT, bucketName,
                                            resourcePath: "?notification")
                                 .ConfigureAwait(false);
-    
+
             request.XmlSerializer = new RestSharp.Serializers.DotNetXmlSerializer();
             request.RequestFormat = DataFormat.Xml;
             request.AddBody(notification);
-            
+
             IRestResponse response = await this.ExecuteTaskAsync(this.NoErrorHandlers, request, cancellationToken).ConfigureAwait(false);
         }
 

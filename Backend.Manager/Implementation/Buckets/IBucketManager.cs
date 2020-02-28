@@ -26,5 +26,7 @@
         Task<bool> BucketExistsAsync();
 
         Task<ICollection<Bucket>> BucketsListAsync(int limit = 25, int page = 1);
+
+        ICollection<Item> GetListOfItemsForBucket();
     }
 }

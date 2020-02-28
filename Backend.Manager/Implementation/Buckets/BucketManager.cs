@@ -1,7 +1,10 @@
 ﻿namespace Backend.Manager.Implementation.Buckets
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
+    using System.Reactive.Linq;
     using System.Threading.Tasks;
     using Backend.Manager.Helpers.Errors;
     using Backend.Manager.Helpers.Extension;
@@ -96,7 +99,7 @@
             }
 
             // Get the list of items from the first bucket
-            var originalBucketObjects = await this.minioClient.GetBucketItemsAsync(oldBucketName).ConfigureAwait(false);
+            var originalBucketItems = this.GetListOfItemsForBucket();
 
             // set the Name of the new Bucket
             this.SetBucket(newBucketName);
@@ -108,7 +111,7 @@
             }
 
             // Copy the items into the new one - Minio
-            foreach (var item in originalBucketObjects)
+            foreach (var item in originalBucketItems)
             {
                 await this.minioClient.CopyObjectAsync(oldBucketName, item.Key, this.bucket);
             }
@@ -136,8 +139,9 @@
                 return true;
             }
 
-            var bucketObjects = await this.minioClient.GetBucketItemsAsync(bucket).ConfigureAwait(false);
-            foreach (var item in bucketObjects)
+            var bucketItems = this.GetListOfItemsForBucket();
+
+            foreach (var item in bucketItems)
             {
                 await this.minioClient.RemoveObjectAsync(bucket, item.Key);
             }
@@ -164,6 +168,22 @@
             var result = await this.minioClient.ListBucketsAsync();
 
             return result?.Buckets;
+        }
+
+        public ICollection<Item> GetListOfItemsForBucket()
+        {
+            var bucketItems = new List<Item>();
+
+            var observable = this.minioClient.ListObjectsAsync(this.bucket);
+
+            var subscription = observable.Subscribe(
+                    item => bucketItems.Add(item),
+                    ex => Debug.WriteLine($"OnError: {ex}"),
+                    () => Debug.WriteLine($"Listed all objects in bucket {this.bucket}\n"));
+
+            observable.Wait();
+
+            return bucketItems;
         }
     }
 }

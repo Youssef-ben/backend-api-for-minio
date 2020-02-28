@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Backend.API.Controllers.Core;
 using Backend.API.Models;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Minio.DataModel;
 
 namespace Backend.API.Controllers.V1
 {
@@ -105,6 +107,34 @@ namespace Backend.API.Controllers.V1
             }
         }
 
+
+        [HttpGet]
+        [Route("{id}/items")]
+        [ProducesResponseType(typeof(ICollection<Item>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+        public IActionResult GetBucketItemsAsync(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return this.LogAndReturnCustomError(this.logger, StatusCodes.Status400BadRequest, ErrorTypes.CREATE);
+            }
+
+            try
+            {
+                var results = this.manager.SetBucket(id).GetListOfItemsForBucket();
+
+                return this.StatusCode(StatusCodes.Status200OK, results);
+            }
+            catch (BaseCustomError ex)
+            {
+                return this.LogAndReturnCustomError(ex, this.logger);
+            }
+            catch (Exception ex)
+            {
+                return this.LogAndReturnCustomError(ex, this.logger);
+            }
+        }
 
         /// <summary>
         /// Create a bucket based on the specified name if not exits.

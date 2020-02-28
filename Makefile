@@ -1,4 +1,4 @@
-.PHONY: init-docker start-docker stop-docker restart-docker nuke  init-docker-dev start-docker-dev refresh-api-dev
+.PHONY: init-docker start-docker stop-docker restart-docker nuke  init-docker-dev start-docker-dev refresh-api-dev install-ingest
 
 EsContainerName='backend-elasticsearch'
 backendContainerName='backend-api'
@@ -57,3 +57,8 @@ refresh-api-dev:
 	@echo "Refreshing the backend API for the Environment={Development}..."
 	@docker build -t $(backendContainerName)-dev .
 	@docker-compose -f $(BaseCompose) -f $(DevCompose) up -d --no-deps --build $(backendContainerName)-dev
+
+install-ingest:
+	@echo "Run the Command : [elasticsearch-plugin install ingest-attachment]" 
+	@docker exec -it $(EsContainerName) bash
+	

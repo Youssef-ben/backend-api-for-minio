@@ -26,11 +26,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\Settings\appsettings.json" Link="appsettings.json" />
-    <Content Include="..\Settings\appsettings.Local.json" Link="appsettings.Local.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Config\" />
     <Folder Include="Logs\" />
     <Folder Include="wwwroot\" />

@@ -69,23 +69,21 @@
 
             await this.CurrentBucketExistsAsync();
 
-            var result = (await this.minioClient.GetBucketItemsAsync(this.bucket))
-                .Skip(size * page)
-                .Take(size)
-                .ToList();
-
-            return result;
+            // var result = (await this.minioClient.GetBucketItemsAsync(this.bucket))
+            //    .Skip(size * page)
+            //    .Take(size)
+            //    .ToList();
+            return null;
         }
 
         public async Task<Item> GetFileAsync(string name)
         {
             await this.CurrentBucketExistsAsync();
 
-            var result = (await this.minioClient.GetBucketItemsAsync(this.bucket))
-                .Where(f => f.Key == name)
-                ?.FirstOrDefault();
-
-            return result;
+            // var result = (await this.minioClient.GetBucketItemsAsync(this.bucket))
+            //    .Where(f => f.Key == name)
+            //    ?.FirstOrDefault();
+            return null;
         }
 
         public async Task<MinioFile> GetFileContentAsync(string name)
