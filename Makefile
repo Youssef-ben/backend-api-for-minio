@@ -32,7 +32,7 @@ restart-docker: stop-docker start-docker
 
 nuke:
 	@echo "Stopping and deleting the containers using docker-compose..."
-	@docker-compose -f $(BaseCompose) -f $(DevCompose) -f $(ProdCompose) down
+	@docker-compose -f $(BaseCompose)  down
 
 init-docker-dev:
 	@echo "starting Docker for the Environment={Development}..."

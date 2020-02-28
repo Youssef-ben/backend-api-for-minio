@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 
 namespace Backend.API
 {
@@ -37,9 +38,18 @@ namespace Backend.API
                  config.AddEnvironmentVariables();
                  config.AddCommandLine(args);
              })
-            .UseStartup<Startup>();
+            .UseStartup<Startup>()
+            .UseSerilog((hostingContext, loggerConfiguration) =>
+            {
+                loggerConfiguration
+                    .ReadFrom
+                    .Configuration(hostingContext.Configuration)
+                    .Enrich
+                    .FromLogContext()
+                    .WriteTo.Console();
+            });
 
-        public static bool IsLocal(IHostingEnvironment env)
+        public static bool IsLocal(IWebHostEnvironment env)
         {
             return LOCAL.Equals(env.EnvironmentName);
         }

@@ -8,7 +8,6 @@
     using System.Threading.Tasks;
     using Backend.Manager.Helpers.Errors;
     using Backend.Manager.Helpers.Extension;
-    using Backend.Manager.Repository;
     using Backend.Manager.Utils.Models.ConfigModels;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -21,16 +20,14 @@
         private readonly BackendConfiguration configuration;
 
         private readonly ILogger logger;
-        private IElasticsearchRepository eslasticRepository;
 
         private string bucket = string.Empty;
 
-        public BucketManager(ILogger<BucketManager> logger, IOptions<AppsettingsModel> config, IElasticsearchRepository elasticsearchRepository, MinioClient minioClient)
+        public BucketManager(ILogger<BucketManager> logger, IOptions<AppsettingsModel> config, MinioClient minioClient)
         {
             this.logger = logger;
             this.configuration = config.Value.Minio;
 
-            this.eslasticRepository = elasticsearchRepository;
             this.minioClient = minioClient;
         }
 
@@ -39,8 +36,6 @@
             name = name.SanitizeString();
 
             this.bucket = string.IsNullOrWhiteSpace(name) ? this.configuration.DefaultIndex.ToLower() : name.ToLower();
-
-            this.eslasticRepository = this.eslasticRepository.SetBucketIndex(this.bucket);
 
             return this;
         }
@@ -63,11 +58,6 @@
             if (!await this.minioClient.BucketExistsAsync(this.bucket))
             {
                 await this.minioClient.MakeBucketAsync(this.bucket);
-            }
-
-            if (shouldCreateEsIndex)
-            {
-                await this.eslasticRepository.CreateIndexIfNotExists();
             }
 
             return true;
@@ -119,10 +109,7 @@
             // Delete the original one - Minio
             await this.DeleteBucketAsync(oldBucketName);
 
-            // Re-index in elasticsearch.
-            var result = await this.eslasticRepository.RenameIndexAsync(oldBucketName, newBucketName);
-
-            return result;
+            return true;
         }
 
         public async Task<bool> DeleteBucketAsync(string bucket = "")
@@ -147,15 +134,6 @@
             }
 
             await this.minioClient.RemoveBucketAsync(bucket);
-
-            /**
-             * Delete the Elasticsearch index only when the current bucket name equals the param.
-             * This means that the method was called by a method other that the <see cref="RenameBucketAsync(string)"/>
-             */
-            if (this.bucket.Equals(bucket))
-            {
-                await this.eslasticRepository.DeleteIndexAsync();
-            }
 
             return true;
         }

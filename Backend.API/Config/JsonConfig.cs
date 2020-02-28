@@ -1,23 +1,24 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Backend.API.Config
 {
     public static class JsonConfig
     {
-        public static Action<MvcJsonOptions> Configure()
+        public static Action<MvcNewtonsoftJsonOptions> SetJsonConfigurations(this Startup self)
         {
-            return jsonOptions =>
+            if (self is null)
             {
-                jsonOptions.SerializerSettings.ContractResolver = new DefaultContractResolver()
-                {
-                    NamingStrategy = new SnakeCaseNamingStrategy(),
-                };
+                throw new ArgumentNullException($"The {nameof(Startup)} reuqired!");
+            }
 
-                // Ignore the Looping reference when including an entirty inside an entity.
-                jsonOptions.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            return options =>
+            {
+                options.SerializerSettings.ContractResolver = new SnakeCaseContractResolver();
+                options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                options.SerializerSettings.Formatting = Formatting.Indented;
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             };
         }
     }

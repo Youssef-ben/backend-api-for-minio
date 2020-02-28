@@ -4,7 +4,6 @@
     using Backend.Manager.Helpers;
     using Backend.Manager.Helpers.Errors.CustomErrors;
     using Backend.Manager.Implementation.Buckets;
-    using Backend.Manager.Repository;
     using Backend.Tests.Config;
     using Xunit;
     using Xunit.Priority;
@@ -18,13 +17,10 @@
 
         public BucketTests()
         {
-            var EsConfig = GetAppsettingsConfigs.GetConfiguration<ElasticSearchRepository>();
             var BucketManagerConfig = GetAppsettingsConfigs.GetConfiguration<BucketManager>();
 
-            IElasticsearchRepository EsRepository = new ElasticSearchRepository(EsConfig.Logger, EsConfig.Configurations, EsConfig.Configurations.Value.Elasticsearch.GetElasticSearchClient());
-
             var minioClient = BucketManagerConfig.Configurations.Value.Minio.GetMinioClient();
-            this.BucketManager = new BucketManager(BucketManagerConfig.Logger, BucketManagerConfig.Configurations, EsRepository, minioClient);
+            this.BucketManager = new BucketManager(BucketManagerConfig.Logger, BucketManagerConfig.Configurations, minioClient);
 
             this.BucketManager.SetBucket(this.BucketName);
         }

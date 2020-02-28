@@ -6,7 +6,6 @@
     using Backend.Manager.Helpers.Errors.CustomErrors;
     using Backend.Manager.Implementation.Buckets;
     using Backend.Manager.Implementation.Uploader;
-    using Backend.Manager.Repository;
     using Backend.Tests.Config;
     using Xunit;
     using Xunit.Priority;
@@ -21,15 +20,12 @@
 
         public UploaderTests()
         {
-            var EsConfig = GetAppsettingsConfigs.GetConfiguration<ElasticSearchRepository>();
             var UploaderManagerConfig = GetAppsettingsConfigs.GetConfiguration<UploaderManager>();
             var BucketManagerConfig = GetAppsettingsConfigs.GetConfiguration<BucketManager>();
 
-            IElasticsearchRepository EsRepository = new ElasticSearchRepository(EsConfig.Logger, EsConfig.Configurations, EsConfig.Configurations.Value.Elasticsearch.GetElasticSearchClient());
-
             var minioClient = UploaderManagerConfig.Configurations.Value.Minio.GetMinioClient();
-            this.UploaderManager = new UploaderManager(UploaderManagerConfig.Logger, UploaderManagerConfig.Configurations, EsRepository, minioClient);
-            this.BucketManager = new BucketManager(BucketManagerConfig.Logger, UploaderManagerConfig.Configurations, EsRepository, minioClient);
+            this.BucketManager = new BucketManager(BucketManagerConfig.Logger, UploaderManagerConfig.Configurations, minioClient);
+            this.UploaderManager = new UploaderManager(UploaderManagerConfig.Logger, UploaderManagerConfig.Configurations, minioClient, this.BucketManager);
 
             this.BucketManager.SetBucket(this.BucketName);
             this.UploaderManager.SetBucket(this.BucketName);

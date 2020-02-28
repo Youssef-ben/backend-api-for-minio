@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
-
-namespace Backend.API.Config
+﻿namespace Backend.API.Config
 {
+    using System.Linq;
+    using Microsoft.OpenApi.Models;
+    using Swashbuckle.AspNetCore.SwaggerGen;
+
     /// <summary>
     /// Source : https://github.com/Microsoft/aspnet-api-versioning/wiki/Swashbuckle-Integration
     /// Represents the Swagger/Swashbuckle operation filter used to provide default values.
@@ -12,14 +12,14 @@ namespace Backend.API.Config
     /// Once they are fixed and published, this class can be removed.</remarks>
     public class SwaggerDefaultValues : IOperationFilter
     {
-        public void Apply(Operation operation, OperationFilterContext context)
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             if (operation.Parameters == null)
             {
                 return;
             }
 
-            foreach (var parameter in operation.Parameters.OfType<NonBodyParameter>())
+            foreach (var parameter in operation.Parameters)
             {
                 var description = context.ApiDescription
                                          .ParameterDescriptions
@@ -27,19 +27,14 @@ namespace Backend.API.Config
 
                 var routeInfo = description.RouteInfo;
 
-                if (parameter.Description == null)
+                if (parameter.Description is null)
                 {
                     parameter.Description = description.ModelMetadata?.Description;
                 }
 
-                if (routeInfo == null)
+                if (routeInfo is null)
                 {
                     continue;
-                }
-
-                if (parameter.Default == null)
-                {
-                    parameter.Default = routeInfo.DefaultValue;
                 }
 
                 parameter.Required |= !routeInfo.IsOptional;

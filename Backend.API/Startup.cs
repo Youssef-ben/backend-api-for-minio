@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 namespace Backend.API
 {
@@ -43,44 +43,32 @@ namespace Backend.API
 
             services.AddLogging();
 
-            services.AddMvc(opt =>
-            {
-                opt.Filters.Add(typeof(ValidateModelAttribute));
-            })
-                 .AddFluentValidation(fv =>
+            services.AddMvcCore(opt =>
+                {
+                    opt.Filters.Add(typeof(ValidateModelAttribute));
+                })
+                .AddApiExplorer()
+                .AddFluentValidation(fv =>
                  {
                      fv.RegisterValidatorsFromAssemblyContaining<Startup>();
                      fv.RunDefaultMvcValidationAfterFluentValidationExecutes = false;
                      fv.ImplicitlyValidateChildProperties = true;
                  })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddJsonOptions(JsonConfig.Configure())
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddNewtonsoftJson(this.SetJsonConfigurations())
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                 .AddDataAnnotationsLocalization();
 
-            // add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
-            // note: the specified format code will format the version as "'v'major[.minor][-status]"
-            services.AddMvcCore()
-                .AddVersionedApiExplorer(options =>
-                {
-                    options.GroupNameFormat = "'v'VVV";
-
-                    // Note: this option is only necessary when versioning by url segment. the Substitution Format
-                    // can also be used to control the format of the API version in route templates.
-                    options.SubstituteApiVersionInUrl = true;
-                });
-
-            services.AddApiVersioning(o =>
-            {
-                o.ReportApiVersions = true;
-            });
+            services
+                .AddApiVersioning(o => o.ReportApiVersions = true)
+                .AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV")
+                .AddSwaggerConfiguration();
 
             // Create an instance of IOption for the {Settings} section of the appsettings.
             services.Configure<AppsettingsModel>(this.Configuration.GetSection("Settings"));
 
             // Register Projects Dependency injection
             ManagerIoc.Register(services, this.Configuration);
-            SwaggerConfig.Register(services);
         }
 
         /// <summary>
@@ -88,13 +76,9 @@ namespace Backend.API
         /// </summary>
         /// <param name="app">The current application builder.</param>
         /// <param name="env">The current hosting environment.</param>
-        /// <param name="loggerFactory">The logging factory used for instrumentation.</param>
-        /// <param name="provider">The API version descriptor provider used to enumerate defined API versions.</param>
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IApiVersionDescriptionProvider provider)
+        /// <param name="apiVersionProvider">Api versioning provider.</param>
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionProvider)
         {
-            loggerFactory.AddConsole(this.Configuration.GetSection("Logging"));
-            loggerFactory.AddFile(this.Configuration.GetSection("Logging").GetValue<string>("PathFormat"), isJson: true);
-
             if (env.IsDevelopment() || Program.IsLocal(env))
             {
                 app.UseDeveloperExceptionPage();
@@ -106,10 +90,9 @@ namespace Backend.API
 
             // Custom Configuration
             LocalizationConfig.Configure(app);
-            SwaggerConfig.Configure(app, provider);
+            app.UseCustomSwagger(apiVersionProvider);
 
             app.UseHttpsRedirection();
-            app.UseMvc();
         }
     }
 }

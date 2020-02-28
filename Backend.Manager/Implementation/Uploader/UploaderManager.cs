@@ -6,7 +6,7 @@
     using System.Threading.Tasks;
     using Backend.Manager.Helpers.Errors;
     using Backend.Manager.Helpers.Extension;
-    using Backend.Manager.Repository;
+    using Backend.Manager.Implementation.Buckets;
     using Backend.Manager.Utils.Models;
     using Backend.Manager.Utils.Models.ConfigModels;
     using Microsoft.AspNetCore.Http;
@@ -21,18 +21,19 @@
         private readonly MinioClient minioClient;
         private readonly BackendConfiguration configuration;
 
+        private readonly IBucketManager bucketManager;
+
         private readonly ILogger logger;
-        private IElasticsearchRepository eslasticRepository;
 
         private string bucket = string.Empty;
 
-        public UploaderManager(ILogger<UploaderManager> logger, IOptions<AppsettingsModel> config, IElasticsearchRepository elasticsearchRepository, MinioClient minioClient)
+        public UploaderManager(ILogger<UploaderManager> logger, IOptions<AppsettingsModel> config, MinioClient minioClient, IBucketManager bucketManager)
         {
             this.logger = logger;
             this.configuration = config.Value.Minio;
 
-            this.eslasticRepository = elasticsearchRepository;
             this.minioClient = minioClient;
+            this.bucketManager = bucketManager;
         }
 
         public UploaderManager SetBucket(string name)
@@ -40,8 +41,6 @@
             name = name.SanitizeString();
 
             this.bucket = string.IsNullOrWhiteSpace(name) ? this.configuration.DefaultIndex.ToLower() : name.ToLower();
-
-            this.eslasticRepository = this.eslasticRepository.SetBucketIndex(this.bucket);
 
             return this;
         }
@@ -69,40 +68,41 @@
 
             await this.CurrentBucketExistsAsync();
 
-            // var result = (await this.minioClient.GetBucketItemsAsync(this.bucket))
-            //    .Skip(size * page)
-            //    .Take(size)
-            //    .ToList();
-            return null;
+            return this.bucketManager
+                .SetBucket(this.bucket)
+                .GetListOfItemsForBucket()
+                .Skip(size * page)
+                .Take(size)
+                .ToList();
         }
 
         public async Task<Item> GetFileAsync(string name)
         {
             await this.CurrentBucketExistsAsync();
 
-            // var result = (await this.minioClient.GetBucketItemsAsync(this.bucket))
-            //    .Where(f => f.Key == name)
-            //    ?.FirstOrDefault();
-            return null;
+            return this.bucketManager
+                .SetBucket(this.bucket)
+                .GetListOfItemsForBucket()
+                .Where(f => f.Key == name)
+                ?.FirstOrDefault();
         }
 
         public async Task<MinioFile> GetFileContentAsync(string name)
         {
             await this.CurrentBucketExistsAsync();
 
-            var result = (await this.eslasticRepository.SearchByNameAsync(name))
-                ?.FirstOrDefault();
+            var result = await this.GetFileAsync(name);
 
             if (result is null)
             {
                 throw this.logger.LogAndThrowException(ErrorTypes.NOT_FOUND, new { File = name });
             }
 
+            // TODO: Get file.
             return new MinioFile()
             {
-                Name = result.Name,
-                Type = result.Attachment.ContentType,
-                Content = result.Attachment.Content,
+                Name = result.Key,
+                Content = result.Size.ToString(),
             };
         }
 
@@ -117,9 +117,7 @@
 
             await this.minioClient.RemoveObjectAsync(this.bucket, filename);
 
-            var result = await this.eslasticRepository.DeleteDocumentAsync(filename);
-
-            return result;
+            return true;
         }
 
         public async Task<Item> UploadFileAsync(IFormFile file)
@@ -178,15 +176,11 @@
                     stream.CopyTo(fileMemoryStream);
                 });
 
-            // Get Extra info
-            var result = (await this.eslasticRepository.SearchByNameAsync(filename)).FirstOrDefault();
-
             fileMemoryStream.Position = 0;
 
             return new MinioFile()
             {
                 Name = filename,
-                Type = result.Attachment.ContentType,
                 StreamContent = fileMemoryStream,
             };
         }
@@ -210,9 +204,7 @@
                     file.ContentType);
             }
 
-            var result = await this.eslasticRepository.IndexDocumentAsync(file);
-
-            return result;
+            return true;
         }
     }
 }
