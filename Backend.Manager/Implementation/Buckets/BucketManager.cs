@@ -5,13 +5,13 @@ namespace Backend.Minio.Manager.Implementation.Buckets
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Reactive.Linq;
     using System.Threading.Tasks;
     using Backend.Minio.Manager.Helpers;
     using Backend.Minio.Manager.Helpers.Api.Response.Custom;
     using Backend.Minio.Manager.Helpers.Extension;
+    using Backend.Minio.Manager.Utils.Helpers.Api.Response.Models;
 
     public class BucketManager : IBucketManager
     {
@@ -22,36 +22,55 @@ namespace Backend.Minio.Manager.Implementation.Buckets
             this.minioClient = minioClient;
         }
 
-        public async Task<bool> BucketExistsAsync(string bucketName)
+        public async Task<bool> BucketExistsAsync(string bucketName, bool throwError = false)
         {
-            bucketName = bucketName.SanitizeString();
+            var result = await this.minioClient.BucketExistsAsync(bucketName.NormalizeString());
 
-            return await this.minioClient.BucketExistsAsync(bucketName);
+            if (throwError && !result)
+            {
+                var extras = new ExtrasDetails
+                {
+                    Manager = this.GetType().Name,
+                    Field = "Bucket Name",
+                    Value = bucketName,
+                    Details = Constants.API_NOT_FOUND.FormatText(bucketName),
+                };
+
+                throw new ApplicationManagerException(extras.Details, Constants.API_NOT_FOUND_ID, extras);
+            }
+
+            return result;
         }
 
         public async Task<Bucket> CreateBucketAsync(string bucketName)
         {
-            bucketName = bucketName.SanitizeString();
+            bucketName = bucketName.NormalizeString();
 
-            if (await this.minioClient.BucketExistsAsync(bucketName))
+            if (await this.BucketExistsAsync(bucketName))
             {
-                throw new ApplicationManagerException(Constants.API_ALREADY_EXISTS.FormatText(bucketName), Constants.API_ALREADY_EXISTS_ID, new { Manager = this.GetType().Name, Field = bucketName });
+                var extras = new ExtrasDetails
+                {
+                    Manager = this.GetType().Name,
+                    Field = "Bucket Name",
+                    Value = bucketName,
+                    Details = Constants.API_CANT_CREATE_BUCKET.FormatText(bucketName),
+                };
+
+                throw new ApplicationManagerException(extras.Details, Constants.API_CANT_CREATE_BUCKET_ID, extras);
             }
 
             await this.minioClient.MakeBucketAsync(bucketName);
+
             return await this.GetBucketAsync(bucketName);
         }
 
         public async Task<Bucket> GetBucketAsync(string bucketName)
         {
-            bucketName = bucketName.SanitizeString();
+            bucketName = bucketName.NormalizeString();
 
-            if (!await this.BucketExistsAsync(bucketName))
-            {
-                throw new ApplicationManagerException(Constants.API_NOT_FOUND.FormatText(bucketName), Constants.API_NOT_FOUND_ID, new { Manager = this.GetType().Name, Field = bucketName });
-            }
+            await this.BucketExistsAsync(bucketName, true);
 
-            var results = await this.BucketsListAsync(1, IBucketManager.MAX_BUCKETS_PER_PAGE);
+            var results = await this.GetAllBucketsAsync(1, IBucketManager.MAX_BUCKETS_PER_PAGE);
 
             return results
                 .Where(b => b.Name.Equals(bucketName))
@@ -60,42 +79,47 @@ namespace Backend.Minio.Manager.Implementation.Buckets
 
         public async Task<Bucket> RenameBucketAsync(string oldName, string newName)
         {
-            oldName = oldName.SanitizeString();
-            newName = newName.SanitizeString();
+            oldName = oldName.NormalizeString();
+            newName = newName.NormalizeString();
 
             // Check if the old bucket exists
-            if (!await this.BucketExistsAsync(oldName))
-            {
-                throw new ApplicationManagerException(Constants.API_NOT_FOUND.FormatText(oldName), Constants.API_NOT_FOUND_ID, new { Manager = this.GetType().Name, Field = oldName });
-            }
+            await this.BucketExistsAsync(oldName, true);
 
             // Check that the new bucket doesn't exist.
-            if (!await this.BucketExistsAsync(newName))
+            if (await this.BucketExistsAsync(newName))
             {
-                throw new ApplicationManagerException(Constants.API_ALREADY_EXISTS.FormatText(newName), Constants.API_ALREADY_EXISTS_ID, new { Manager = this.GetType().Name, Field = newName });
+                var extras = new ExtrasDetails
+                {
+                    Manager = this.GetType().Name,
+                    Field = "Bucket Name",
+                    Value = newName,
+                    Details = Constants.API_CANT_UPDATE_BUCKET.FormatText(newName),
+                };
+
+                throw new ApplicationManagerException(extras.Details, Constants.API_CANT_UPDATE_BUCKET_ID, extras);
             }
 
             // Get the list of items from the first bucket.
-            var originalBucketItems = await this.BucketsListAsync(1, IBucketManager.MAX_BUCKETS_PER_PAGE);
+            var originalBucketItems = await this.GetBucketListOfItemsAsync(oldName);
 
             // Create the New Bucket
-            var bucket = await this.CreateBucketAsync(newName);
+            var newBucket = await this.CreateBucketAsync(newName);
 
             // Copy the items into the new one
             foreach (var item in originalBucketItems)
             {
-                await this.minioClient.CopyObjectAsync(oldName, item.Name, newName);
+                await this.minioClient.CopyObjectAsync(oldName, item.Key, newName);
             }
 
             // Delete the original one - Minio
             await this.DeleteBucketAsync(oldName);
 
-            return bucket;
+            return newBucket;
         }
 
         public async Task<Bucket> DeleteBucketAsync(string bucketName)
         {
-            bucketName = bucketName.SanitizeString();
+            bucketName = bucketName.NormalizeString();
 
             var bucket = await this.GetBucketAsync(bucketName);
 
@@ -113,9 +137,9 @@ namespace Backend.Minio.Manager.Implementation.Buckets
             return bucket;
         }
 
-        public async Task<ICollection<Bucket>> BucketsListAsync(int pageId = 1, int pageSize = IBucketManager.DEFAULT_PAGE_LIMITE)
+        public async Task<ICollection<Bucket>> GetAllBucketsAsync(int pageId = 1, int pageSize = IBucketManager.DEFAULT_PAGE_LIMITE)
         {
-            pageId = pageId < 0 ? 1 : pageId;
+            pageId = pageId <= 0 ? 1 : pageId;
             pageSize = pageSize <= 0 ? IBucketManager.DEFAULT_PAGE_LIMITE : pageSize;
 
             var result = await this.minioClient.ListBucketsAsync();
@@ -128,12 +152,9 @@ namespace Backend.Minio.Manager.Implementation.Buckets
 
         public async Task<ICollection<Item>> GetBucketListOfItemsAsync(string bucketName)
         {
-            bucketName = bucketName.SanitizeString();
+            bucketName = bucketName.Normalize();
 
-            if (!await this.BucketExistsAsync(bucketName))
-            {
-                throw new ApplicationManagerException(Constants.API_NOT_FOUND.FormatText(bucketName), Constants.API_NOT_FOUND_ID, new { Manager = this.GetType().Name, Field = bucketName });
-            }
+            await this.BucketExistsAsync(bucketName, true);
 
             var bucketItems = new List<Item>();
 
@@ -144,7 +165,7 @@ namespace Backend.Minio.Manager.Implementation.Buckets
                 var subscription = observable.Subscribe(
                         item => bucketItems.Add(item),
                         ex => throw ex,
-                        () => Debug.WriteLine(Constants.LOG_MESSAGE.FormatText(bucketName)));
+                        () => Console.WriteLine(Constants.LOG_MESSAGE.FormatText(bucketName)));
 
                 observable.Wait();
             }

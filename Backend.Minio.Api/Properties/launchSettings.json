@@ -6,13 +6,13 @@
   },
   "profiles": {
 
-    "API.Development": {
+    "API.local": {
       "commandName": "Project",
       "launchBrowser": false,
       "launchUrl": "http://localhost:5100",
       "applicationUrl": "http://localhost:5100",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Local"
+        "ASPNETCORE_ENVIRONMENT": "local"
       }
     }
 

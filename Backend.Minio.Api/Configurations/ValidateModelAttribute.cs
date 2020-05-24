@@ -27,8 +27,8 @@
             var error = new ErrorResponse()
                 .SetMethodName("API.ValidateModelAttribute(...)")
                 .SetErrorResponseValues(validationErrors)
-                .SetUserMessage(Constants.API_INVALID_FIELDS_VALIDATION, Constants.API_INVALID_FIELDS_VALIDATION_ID)
-                .SetMessage(Constants.API_INVALID_FIELDS_VALIDATION_ERROR);
+                .SetUserMessage(Constants.API_FIELDS_INVALID_VALIDATION, Constants.API_FIELDS_INVALID_VALIDATION_ID)
+                .SetMessage(Constants.API_FIELDS_INVALID_VALIDATION_ERROR);
 
             context.Result = new BadRequestObjectResult(error);
         }

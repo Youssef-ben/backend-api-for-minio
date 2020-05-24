@@ -32,24 +32,28 @@
             return this.StatusCode(statusCode, response);
         }
 
-        protected IActionResult LogNotFound(string message, [CallerMemberName]string methodName = default)
+        protected IActionResult LogNotFound(string message, string messageId = default, [CallerMemberName]string methodName = default)
         {
             this.logger.LogWarning($"API - {methodName} - {message}");
 
+            messageId = string.IsNullOrWhiteSpace(messageId) ? Constants.API_NOT_FOUND_ID : messageId;
+
             var response = new ErrorResponse()
-                .SetUserMessage(message, Constants.API_NOT_FOUND_ID)
+                .SetUserMessage(message, messageId)
                 .SetMessage(Constants.API_REPONSE_FAILED)
                 .SetMethodName($"API.Method.{methodName}");
 
             return this.StatusCode(StatusCodes.Status404NotFound, response);
         }
 
-        protected IActionResult LogBadRequest(string message, [CallerMemberName]string methodName = default)
+        protected IActionResult LogBadRequest(string message, string messageId = default, [CallerMemberName]string methodName = default)
         {
             this.logger.LogError($"API - {methodName} - {message}");
 
+            messageId = string.IsNullOrWhiteSpace(messageId) ? Constants.API_BAD_REQUEST_ERROR_MESSAGE_ID : messageId;
+
             var response = new ErrorResponse()
-                .SetUserMessage(message, Constants.API_BAD_REQUEST_ERROR_MESSAGE_ID)
+                .SetUserMessage(message, messageId)
                 .SetMessage(Constants.API_REPONSE_FAILED)
                 .SetMethodName($"API.Method.{methodName}");
 

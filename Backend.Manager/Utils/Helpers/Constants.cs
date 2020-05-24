@@ -13,15 +13,23 @@
 
         public const string API_BAD_REQUEST_ERROR_MESSAGE_ID = "api.error.bad.request.id";
 
-        public const string API_ALREADY_EXISTS = "The bucket [{0}] already exists !!";
+        public const string API_ALREADY_EXISTS = "The bucket [{0}] already exists!";
         public const string API_ALREADY_EXISTS_ID = "api.error.bucket.already.exists.id";
+
+        // For security reasons, we should return a message as {Can't create the bucket} instead of {Already Exists}.
+        public const string API_CANT_CREATE_BUCKET = "Oops, we couldn't create the bucket [{0}], please contact our support team if the problem persists.";
+        public const string API_CANT_CREATE_BUCKET_ID = "api.error.bucket.cant.create.id";
+
+        // For security reasons, we should return a message as {Can't update the bucket} instead of {Already Exists}.
+        public const string API_CANT_UPDATE_BUCKET = "Oops, we couldn't update the bucket [{0}], please contact our support team if the problem persists.";
+        public const string API_CANT_UPDATE_BUCKET_ID = "api.error.bucket.cant.update.id";
 
         public const string API_NOT_FOUND = "Couldn't find the requested bucket [{0}]. Please retry with a valid name.";
         public const string API_NOT_FOUND_ID = "api.error.bucket.not.found.id";
 
-        public const string API_INVALID_FIELDS_VALIDATION = "One or more fields are required or invalid!!";
-        public const string API_INVALID_FIELDS_VALIDATION_ERROR = "Error Occurred while trying to validate the model state. please refer to the {values} field of this response.";
-        public const string API_INVALID_FIELDS_VALIDATION_ID = "api.error.fields.validation.id";
+        public const string API_FIELDS_INVALID_VALIDATION = "One or more fields are required or invalid!!";
+        public const string API_FIELDS_INVALID_VALIDATION_ERROR = "Error Occurred while trying to validate the model state. please refer to the {values} field of this response.";
+        public const string API_FIELDS_INVALID_VALIDATION_ID = "api.error.fields.validation.id";
 
         // Generic messages
         public const string MINIO_API_ERROR = "Sequence contains no elements.";
