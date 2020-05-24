@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Backend.Manager.Utils.Models;
+using Backend.Minio.Manager.Utils.Models;
 using Microsoft.AspNetCore.Http;
 using Minio.DataModel;
 
-namespace Backend.Manager.Implementation.Uploader
+namespace Backend.Minio.Manager.Implementation.Uploader
 {
     public interface IUploaderManager
     {

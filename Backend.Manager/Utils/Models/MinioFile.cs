@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Newtonsoft.Json;
 
-namespace Backend.Manager.Utils.Models
+namespace Backend.Minio.Manager.Utils.Models
 {
     public class MinioFile
     {

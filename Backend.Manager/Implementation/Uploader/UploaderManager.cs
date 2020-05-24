@@ -1,25 +1,26 @@
-﻿namespace Backend.Manager.Implementation.Uploader
+﻿using Minio;
+using Minio.DataModel;
+using Minio.Exceptions;
+
+namespace Backend.Minio.Manager.Implementation.Uploader
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
-    using Backend.Manager.Helpers.Errors;
-    using Backend.Manager.Helpers.Extension;
-    using Backend.Manager.Implementation.Buckets;
-    using Backend.Manager.Utils.Models;
-    using Backend.Manager.Utils.Models.ConfigModels;
+    using Backend.Minio.Manager.Helpers.Extension;
+    using Backend.Minio.Manager.Implementation.Buckets;
+    using Backend.Minio.Manager.Utils.Models;
+    using Backend.Minio.Manager.Utils.Models.ConfigModels;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using Minio;
-    using Minio.DataModel;
-    using Minio.Exceptions;
 
     public class UploaderManager : IUploaderManager
     {
         private readonly MinioClient minioClient;
-        private readonly BackendConfiguration configuration;
+        private readonly MinioSettings configuration;
 
         private readonly IBucketManager bucketManager;
 
@@ -27,7 +28,7 @@
 
         private string bucket = string.Empty;
 
-        public UploaderManager(ILogger<UploaderManager> logger, IOptions<AppsettingsModel> config, MinioClient minioClient, IBucketManager bucketManager)
+        public UploaderManager(ILogger<UploaderManager> logger, IOptions<SettingsModel> config, MinioClient minioClient, IBucketManager bucketManager)
         {
             this.logger = logger;
             this.configuration = config.Value.Minio;
@@ -68,9 +69,8 @@
 
             await this.CurrentBucketExistsAsync();
 
-            return this.bucketManager
-                .SetBucket(this.bucket)
-                .GetListOfItemsForBucket()
+            return (await this.bucketManager
+                .GetBucketListOfItemsAsync(this.bucket))
                 .Skip(size * page)
                 .Take(size)
                 .ToList();
@@ -80,9 +80,8 @@
         {
             await this.CurrentBucketExistsAsync();
 
-            return this.bucketManager
-                .SetBucket(this.bucket)
-                .GetListOfItemsForBucket()
+            return (await this.bucketManager
+                .GetBucketListOfItemsAsync(this.bucket))
                 .Where(f => f.Key == name)
                 ?.FirstOrDefault();
         }
@@ -95,7 +94,7 @@
 
             if (result is null)
             {
-                throw this.logger.LogAndThrowException(ErrorTypes.NOT_FOUND, new { File = name });
+                throw new ApplicationException("Not found");
             }
 
             // TODO: Get file.
@@ -126,14 +125,10 @@
 
             if (await this.FileExistsAsync(file.FileName))
             {
-                throw this.logger.LogAndThrowException(ErrorTypes.ALREADY_EXISTS, new { File = file.FileName });
+                throw new ApplicationException("Already exists");
             }
 
             var result = await this.UploadDocumentAsync(file);
-            if (!result)
-            {
-                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { File = file.FileName });
-            }
 
             return await this.GetFileAsync(file.FileName);
         }
@@ -144,15 +139,10 @@
 
             if (!await this.FileExistsAsync(file.FileName))
             {
-                throw this.logger.LogAndThrowException(ErrorTypes.NOT_FOUND, new { File = file.FileName });
+                throw new ApplicationException("Not found");
             }
 
             var result = await this.UploadDocumentAsync(file);
-            if (!result)
-            {
-                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_WHILE_INDEXING_THE_DOCUMENT, new { File = file.FileName });
-            }
-
             return await this.GetFileAsync(file.FileName);
         }
 
@@ -162,7 +152,7 @@
 
             if (!await this.FileExistsAsync(filename))
             {
-                throw this.logger.LogAndThrowException(ErrorTypes.NOT_FOUND, new { File = filename });
+                throw new ApplicationException("Not found");
             }
 
             var fileMemoryStream = new MemoryStream();
@@ -189,7 +179,7 @@
         {
             if (string.IsNullOrWhiteSpace(this.bucket) || !await this.minioClient.BucketExistsAsync(this.bucket))
             {
-                throw this.logger.LogAndThrowException(ErrorTypes.ERROR_BUCKET_DOESNT_EXISTS, new { Bucket = this.bucket });
+                throw new ApplicationException("Not found");
             }
         }
 

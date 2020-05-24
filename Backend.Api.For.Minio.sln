@@ -29,11 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Settings", "Settings", "{57
 		Settings\appsettings.Local.json = Settings\appsettings.Local.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend.Manager", "Backend.Manager\Backend.Manager.csproj", "{C288098D-99CA-4810-AC39-AB3EAB5DC058}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend.Tests", "Backend.Tests\Backend.Tests.csproj", "{E6667198-6C15-4938-BC7C-9D8A14E46494}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend.API", "Backend.API\Backend.API.csproj", "{BF41FB2C-07B8-41B3-BF63-72D942D424E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend.Minio.Manager", "Backend.Manager\Backend.Minio.Manager.csproj", "{C288098D-99CA-4810-AC39-AB3EAB5DC058}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{F461EB32-EEFB-4174-A346-01194601AB0D}"
 	ProjectSection(SolutionItems) = preProject
@@ -41,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{F461EB
 		docker-compose.yml = docker-compose.yml
 		Dockerfile = Dockerfile
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend.Minio.Api", "Backend.Minio.Api\Backend.Minio.Api.csproj", "{14A3BA8E-1036-460A-81E7-B430D5D0E446}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,14 +50,10 @@ Global
 		{C288098D-99CA-4810-AC39-AB3EAB5DC058}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C288098D-99CA-4810-AC39-AB3EAB5DC058}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C288098D-99CA-4810-AC39-AB3EAB5DC058}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E6667198-6C15-4938-BC7C-9D8A14E46494}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6667198-6C15-4938-BC7C-9D8A14E46494}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6667198-6C15-4938-BC7C-9D8A14E46494}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E6667198-6C15-4938-BC7C-9D8A14E46494}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF41FB2C-07B8-41B3-BF63-72D942D424E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF41FB2C-07B8-41B3-BF63-72D942D424E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF41FB2C-07B8-41B3-BF63-72D942D424E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF41FB2C-07B8-41B3-BF63-72D942D424E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14A3BA8E-1036-460A-81E7-B430D5D0E446}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14A3BA8E-1036-460A-81E7-B430D5D0E446}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14A3BA8E-1036-460A-81E7-B430D5D0E446}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14A3BA8E-1036-460A-81E7-B430D5D0E446}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

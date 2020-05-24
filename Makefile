@@ -11,12 +11,12 @@ init-docker:
 	@echo "Creating and starting the containers using docker-compose..."
 	@docker-compose up -d
 
-	@echo "installing Elasticsearch ingest-attachement plugin..."
-	@docker exec $(EsContainerName) bin/elasticsearch-plugin install -b ingest-attachment
+	##@echo "installing Elasticsearch ingest-attachement plugin..."
+	##@docker exec $(EsContainerName) bin/elasticsearch-plugin install -b ingest-attachment
 
-	@echo "Restarting Elasticsearch..."
-	@docker stop $(EsContainerName)
-	@docker start $(EsContainerName)
+	##@echo "Restarting Elasticsearch..."
+	##@docker stop $(EsContainerName)
+	##@docker start $(EsContainerName)
 
 	@echo "done."
 
