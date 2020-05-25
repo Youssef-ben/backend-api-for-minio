@@ -12,7 +12,7 @@
 
     public static class SwaggerConfigurationExtensions
     {
-        public const string LATEST_VERSION = "1.0";
+        public const string LastVersion = "1.0";
 
         private static string GetXmlCommentsFilePath
         {
@@ -20,6 +20,7 @@
             {
                 var basePath = PlatformServices.Default.Application.ApplicationBasePath;
                 var fileName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name + ".xml";
+                Console.WriteLine(Path.Combine(basePath, fileName));
                 return Path.Combine(basePath, fileName);
             }
         }

@@ -22,7 +22,7 @@ namespace Backend.Minio.Manager.Implementation.Buckets
             this.minioClient = minioClient;
         }
 
-        public async Task<bool> BucketExistsAsync(string bucketName, bool throwError = false)
+        public async Task<bool> DoesBucketExistsAsync(string bucketName, bool throwError = false)
         {
             var result = await this.minioClient.BucketExistsAsync(bucketName.NormalizeString());
 
@@ -33,10 +33,10 @@ namespace Backend.Minio.Manager.Implementation.Buckets
                     Manager = this.GetType().Name,
                     Field = "Bucket Name",
                     Value = bucketName,
-                    Details = Constants.API_NOT_FOUND.FormatText(bucketName),
+                    Details = Constants.API_BUCKET_NOT_FOUND.FormatText(bucketName),
                 };
 
-                throw new ApplicationManagerException(extras.Details, Constants.API_NOT_FOUND_ID, extras);
+                throw new ApplicationManagerException(extras.Details, Constants.API_BUCKET_NOT_FOUND_ID, extras);
             }
 
             return result;
@@ -46,7 +46,7 @@ namespace Backend.Minio.Manager.Implementation.Buckets
         {
             bucketName = bucketName.NormalizeString();
 
-            if (await this.BucketExistsAsync(bucketName))
+            if (await this.DoesBucketExistsAsync(bucketName))
             {
                 var extras = new ExtrasDetails
                 {
@@ -68,9 +68,9 @@ namespace Backend.Minio.Manager.Implementation.Buckets
         {
             bucketName = bucketName.NormalizeString();
 
-            await this.BucketExistsAsync(bucketName, true);
+            await this.DoesBucketExistsAsync(bucketName, true);
 
-            var results = await this.GetAllBucketsAsync(1, IBucketManager.MAX_BUCKETS_PER_PAGE);
+            var results = await this.GetAllBucketsAsync(1, Constants.MAX_BUCKETS_PER_PAGE);
 
             return results
                 .Where(b => b.Name.Equals(bucketName))
@@ -83,10 +83,10 @@ namespace Backend.Minio.Manager.Implementation.Buckets
             newName = newName.NormalizeString();
 
             // Check if the old bucket exists
-            await this.BucketExistsAsync(oldName, true);
+            await this.DoesBucketExistsAsync(oldName, true);
 
             // Check that the new bucket doesn't exist.
-            if (await this.BucketExistsAsync(newName))
+            if (await this.DoesBucketExistsAsync(newName))
             {
                 var extras = new ExtrasDetails
                 {
@@ -137,16 +137,16 @@ namespace Backend.Minio.Manager.Implementation.Buckets
             return bucket;
         }
 
-        public async Task<ICollection<Bucket>> GetAllBucketsAsync(int pageId = 1, int pageSize = IBucketManager.DEFAULT_PAGE_LIMITE)
+        public async Task<ICollection<Bucket>> GetAllBucketsAsync(int page = 1, int size = Constants.DEFAULT_PAGE_LIMITE)
         {
-            pageId = pageId <= 0 ? 1 : pageId;
-            pageSize = pageSize <= 0 ? IBucketManager.DEFAULT_PAGE_LIMITE : pageSize;
+            page = page <= 0 ? 1 : page;
+            size = size <= 0 ? Constants.DEFAULT_PAGE_LIMITE : size;
 
             var result = await this.minioClient.ListBucketsAsync();
 
             return result?.Buckets
-                .Skip(pageSize * (pageId - 1))
-                .Take(pageSize)
+                .Skip(size * (page - 1))
+                .Take(size)
                 .ToList();
         }
 
@@ -154,7 +154,7 @@ namespace Backend.Minio.Manager.Implementation.Buckets
         {
             bucketName = bucketName.Normalize();
 
-            await this.BucketExistsAsync(bucketName, true);
+            await this.DoesBucketExistsAsync(bucketName, true);
 
             var bucketItems = new List<Item>();
 

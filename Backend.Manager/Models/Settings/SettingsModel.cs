@@ -1,4 +1,4 @@
-﻿namespace Backend.Minio.Manager.Utils.Models.ConfigModels
+﻿namespace Backend.Minio.Manager.Models.Settings
 {
     public class SettingsModel
     {

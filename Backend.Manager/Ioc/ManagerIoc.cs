@@ -1,7 +1,7 @@
 ﻿namespace Backend.Minio.Manager.Ioc
 {
     using Backend.Minio.Manager.Implementation.Buckets;
-    using Backend.Minio.Manager.Implementation.Uploader;
+    using Backend.Minio.Manager.Implementation.Buckets.Items;
     using Microsoft.Extensions.DependencyInjection;
 
     public static class ManagerIoc
@@ -10,7 +10,7 @@
         {
             self
                 .AddTransient<IBucketManager, BucketManager>()
-                .AddTransient<IUploaderManager, UploaderManager>();
+                .AddTransient<IBucketItemsManager, BucketItemsManager>();
 
             return self;
         }

@@ -4,13 +4,11 @@ namespace Backend.Minio.Manager.Implementation.Buckets
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Backend.Minio.Manager.Helpers;
 
     public interface IBucketManager
     {
-        const int DEFAULT_PAGE_LIMITE = 25;
-        const int MAX_BUCKETS_PER_PAGE = 20000;
-
-        Task<bool> BucketExistsAsync(string bucketName, bool throwError = false);
+        Task<bool> DoesBucketExistsAsync(string bucketName, bool throwError = false);
 
         Task<Bucket> CreateBucketAsync(string bucketName);
 
@@ -22,6 +20,6 @@ namespace Backend.Minio.Manager.Implementation.Buckets
 
         Task<ICollection<Item>> GetBucketListOfItemsAsync(string bucketName);
 
-        Task<ICollection<Bucket>> GetAllBucketsAsync(int pageId = 1, int pageSize = DEFAULT_PAGE_LIMITE);
+        Task<ICollection<Bucket>> GetAllBucketsAsync(int page = 1, int size = Constants.DEFAULT_PAGE_LIMITE);
     }
 }

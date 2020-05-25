@@ -1,7 +1,7 @@
 ﻿namespace Backend.Minio.Api.Configurations
 {
+    using Backend.Minio.Manager.Models.Settings;
     using Backend.Minio.Manager.Utils.Helpers.ConfigExtensions;
-    using Backend.Minio.Manager.Utils.Models.ConfigModels;
     using FluentValidation.AspNetCore;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Versioning;
@@ -66,7 +66,7 @@
         {
             return self
                 .Configure<SettingsModel>(configuration.GetSection("Settings"))
-                .Configure<MinioSettings>(configuration.GetSection("Settings")); ;
+                .Configure<MinioSettings>(configuration.GetSection("Settings"));
         }
     }
 }

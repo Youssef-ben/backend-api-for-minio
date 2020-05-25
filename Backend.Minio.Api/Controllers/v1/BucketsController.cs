@@ -1,6 +1,4 @@
-﻿using Minio.DataModel;
-
-namespace Backend.Minio.Api.Controllers.v1
+﻿namespace Backend.Minio.Api.Controllers.V1
 {
     using System.Collections.Generic;
     using System.Net.Mime;
@@ -11,6 +9,7 @@ namespace Backend.Minio.Api.Controllers.v1
     using Backend.Minio.Manager.Helpers.Api.Response.Models;
     using Backend.Minio.Manager.Helpers.Extension;
     using Backend.Minio.Manager.Implementation.Buckets;
+    using global::Minio.DataModel;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -20,11 +19,11 @@ namespace Backend.Minio.Api.Controllers.v1
     [ControllerName("Buckets")]
     [Route("v{version:apiVersion}/buckets")]
     [Produces(MediaTypeNames.Application.Json)]
-    public class BucketController : CustomBaseController
+    public class BucketsController : CustomBaseController
     {
         private readonly IBucketManager manager;
 
-        public BucketController(ILogger<BucketController> logger, IBucketManager manager)
+        public BucketsController(ILogger<BucketsController> logger, IBucketManager manager)
             : base(logger)
         {
             this.manager = manager;
@@ -48,6 +47,7 @@ namespace Backend.Minio.Api.Controllers.v1
         }
 
         [HttpPut]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(ApiResponse<Bucket>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
@@ -59,9 +59,9 @@ namespace Backend.Minio.Api.Controllers.v1
                 return this.LogBadRequest(Constants.API_FIELDS_INVALID_VALIDATION, Constants.API_FIELDS_INVALID_VALIDATION_ID);
             }
 
-            if (!await this.manager.BucketExistsAsync(bucket.Name))
+            if (!await this.manager.DoesBucketExistsAsync(bucket.Name))
             {
-                return this.LogNotFound(Constants.API_NOT_FOUND.FormatText(bucket.Name));
+                return this.LogNotFound(Constants.API_BUCKET_NOT_FOUND.FormatText(bucket.Name));
             }
 
             var result = await this.manager.RenameBucketAsync(bucket.Name, bucket.NewName);
@@ -82,9 +82,9 @@ namespace Backend.Minio.Api.Controllers.v1
                 return this.LogBadRequest(Constants.API_FIELDS_INVALID_VALIDATION, Constants.API_FIELDS_INVALID_VALIDATION_ID);
             }
 
-            if (!await this.manager.BucketExistsAsync(identifier))
+            if (!await this.manager.DoesBucketExistsAsync(identifier))
             {
-                return this.LogNotFound(Constants.API_NOT_FOUND.FormatText(identifier));
+                return this.LogNotFound(Constants.API_BUCKET_NOT_FOUND.FormatText(identifier));
             }
 
             var result = await this.manager.DeleteBucketAsync(identifier);
@@ -105,9 +105,9 @@ namespace Backend.Minio.Api.Controllers.v1
                 return this.LogBadRequest(Constants.API_FIELDS_INVALID_VALIDATION, Constants.API_FIELDS_INVALID_VALIDATION_ID);
             }
 
-            if (!await this.manager.BucketExistsAsync(identifier))
+            if (!await this.manager.DoesBucketExistsAsync(identifier))
             {
-                return this.LogNotFound(Constants.API_NOT_FOUND.FormatText(identifier));
+                return this.LogNotFound(Constants.API_BUCKET_NOT_FOUND.FormatText(identifier));
             }
 
             var result = await this.manager.GetBucketAsync(identifier);
@@ -127,9 +127,9 @@ namespace Backend.Minio.Api.Controllers.v1
                 return this.LogBadRequest(Constants.API_FIELDS_INVALID_VALIDATION, Constants.API_FIELDS_INVALID_VALIDATION_ID);
             }
 
-            if (!await this.manager.BucketExistsAsync(identifier))
+            if (!await this.manager.DoesBucketExistsAsync(identifier))
             {
-                return this.LogNotFound(Constants.API_NOT_FOUND.FormatText(identifier));
+                return this.LogNotFound(Constants.API_BUCKET_NOT_FOUND.FormatText(identifier));
             }
 
             var result = await this.manager.GetBucketAsync(identifier);
@@ -140,9 +140,9 @@ namespace Backend.Minio.Api.Controllers.v1
         [ProducesResponseType(typeof(ApiResponse<ICollection<Bucket>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllAsync(int pageId = 1, int pageSize = IBucketManager.DEFAULT_PAGE_LIMITE)
+        public async Task<IActionResult> GetAllAsync(int pag = 1, int size = Constants.DEFAULT_PAGE_LIMITE)
         {
-            var result = await this.manager.GetAllBucketsAsync(pageId, pageSize);
+            var result = await this.manager.GetAllBucketsAsync(pag, size);
 
             return this.LogSuccess(result);
         }

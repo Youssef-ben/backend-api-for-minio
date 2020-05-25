@@ -1,10 +1,8 @@
-﻿namespace Backend.Minio.Manager.Utils.Models.ConfigModels
+﻿namespace Backend.Minio.Manager.Models.Settings
 {
     public class MinioSettings
     {
         public string NodeUri { get; set; }
-
-        public int Port { get; set; }
 
         public string DefaultIndex { get; set; }
 

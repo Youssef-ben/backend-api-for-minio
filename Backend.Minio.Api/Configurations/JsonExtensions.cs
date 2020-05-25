@@ -14,6 +14,7 @@
             {
                 throw new ArgumentNullException("The parameter {Startup} is required !");
             }
+
             return options =>
             {
                 var resolver = new DefaultContractResolver() { NamingStrategy = new SnakeCaseNamingStrategy() };

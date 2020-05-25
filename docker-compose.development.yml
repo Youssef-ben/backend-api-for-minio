@@ -1,0 +1,18 @@
+version : "3.6"
+
+
+services:
+  api:
+    container_name: backend-minio-api-dev
+    image: backend-minio-api-dev-image:latest-dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - minio
+    ports:
+      - 9201:5100
+    networks:
+      - backend-network

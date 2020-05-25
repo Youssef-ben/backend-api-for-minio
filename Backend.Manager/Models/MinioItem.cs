@@ -1,9 +1,9 @@
-﻿using System.IO;
-using Newtonsoft.Json;
-
-namespace Backend.Minio.Manager.Utils.Models
+﻿namespace Backend.Minio.Manager.Models
 {
-    public class MinioFile
+    using System.IO;
+    using Newtonsoft.Json;
+
+    public class MinioItem
     {
         [JsonIgnore]
         public MemoryStream StreamContent { get; set; }

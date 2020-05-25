@@ -1,4 +1,4 @@
-namespace Backend.Minio.Api
+﻿namespace Backend.Minio.Api
 {
     using System.IO;
     using Microsoft.AspNetCore.Hosting;
@@ -29,6 +29,7 @@ namespace Backend.Minio.Api
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder
+                .UseUrls("http://0.0.0.0:5100")
                 .UseStartup<Startup>()
                 .UseKestrel((hostingContext, options) =>
                 {

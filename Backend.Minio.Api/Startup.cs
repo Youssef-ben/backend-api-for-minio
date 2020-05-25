@@ -1,4 +1,4 @@
-namespace Backend.Minio.Api
+﻿namespace Backend.Minio.Api
 {
     using Backend.API.Config;
     using Backend.Minio.Api.Configurations;
@@ -17,7 +17,7 @@ namespace Backend.Minio.Api
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }

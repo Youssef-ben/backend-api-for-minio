@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-
-namespace Backend.Minio.Api.Models
+﻿namespace Backend.Minio.Api.Models
 {
+    using Newtonsoft.Json;
+
     public class BucketDto
     {
         public string Name { get; set; }

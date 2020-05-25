@@ -5,13 +5,21 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>bin\Debug\netcoreapp3.1\Backend.Minio.Api.xml</DocumentationFile>
+    <OutputPath></OutputPath>
+    <DocumentationFile></DocumentationFile>
     <NoWarn>1701;1702;CS1587;CS1591</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <CodeAnalysisRuleSet>..\Backend.Api.For.Minio.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DocumentationFile>bin\Debug\netcoreapp3.1\Backend.Minio.Api.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DocumentationFile>app\Backend.Minio.Api.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

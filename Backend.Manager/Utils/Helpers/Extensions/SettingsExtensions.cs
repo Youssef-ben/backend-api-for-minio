@@ -2,7 +2,8 @@
 
 namespace Backend.Minio.Manager.Utils.Helpers.ConfigExtensions
 {
-    using Backend.Minio.Manager.Utils.Models.ConfigModels;
+    using System;
+    using Backend.Minio.Manager.Models.Settings;
     using Microsoft.Extensions.Configuration;
 
     public static class SettingsExtensions
@@ -19,7 +20,8 @@ namespace Backend.Minio.Manager.Utils.Helpers.ConfigExtensions
 
         public static MinioClient GetMinioClient(this MinioSettings self)
         {
-            return new MinioClient($"{self.NodeUri}:{self.Port}", self.Username, self.Password);
+            Console.WriteLine(self.NodeUri);
+            return new MinioClient($"{self.NodeUri}", self.Username, self.Password);
         }
     }
 }

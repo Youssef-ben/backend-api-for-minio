@@ -36,7 +36,7 @@
         {
             this.logger.LogWarning($"API - {methodName} - {message}");
 
-            messageId = string.IsNullOrWhiteSpace(messageId) ? Constants.API_NOT_FOUND_ID : messageId;
+            messageId = string.IsNullOrWhiteSpace(messageId) ? Constants.API_BUCKET_NOT_FOUND_ID : messageId;
 
             var response = new ErrorResponse()
                 .SetUserMessage(message, messageId)

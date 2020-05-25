@@ -19,7 +19,7 @@ services:
     volumes:
      - './data/minio:/data'
     ports:
-     - 9102:9000
+     - 9200:9000
     environment:
      MINIO_ACCESS_KEY: localTest
      MINIO_SECRET_KEY: pd1d3758d68240e88d5a288e398f1b46

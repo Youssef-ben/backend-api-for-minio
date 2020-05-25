@@ -7,6 +7,10 @@
     <NoWarn>1701;1702;CS1587</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <CodeAnalysisRuleSet>..\Backend.Api.For.Minio.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <ApplicationIcon>faveicon.ico</ApplicationIcon>
@@ -14,8 +18,12 @@
     <RootNamespace>Backend.Minio.Manager</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <CodeAnalysisRuleSet>..\Backend.Api.For.Minio.ruleset</CodeAnalysisRuleSet>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DocumentationFile>bin\Debug\netcoreapp3.1\Backend.Minio.Manager.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DocumentationFile>app\Backend.Minio.Manager.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
