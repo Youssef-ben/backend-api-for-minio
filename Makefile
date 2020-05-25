@@ -1,64 +1,50 @@
-.PHONY: init-docker start-docker stop-docker restart-docker nuke  init-docker-dev start-docker-dev refresh-api-dev install-ingest
+.PHONY: 
 
-EsContainerName='backend-elasticsearch'
-backendContainerName='backend-api'
+BACKEND_CONTAINER_NAME		= backend-minio-api-dev
+BACKEND_IMAGE_NAME			= $(BACKEND_CONTAINER_NAME)-image:latest-dev
+DOCKER_COMPOSE				= docker-compose.yml
+DOCKER_COMPOSE_DEV			= docker-compose.development.yml
 
-BaseCompose="docker-compose.yml"
-DevCompose="docker-compose.development.yml"
-ProdCompose="docker-compose.production.yml"
+BACKEND_CONTAINER_UP		= $(shell docker ps --no-trunc --quiet --filter name='^$(BACKEND_CONTAINER_NAME)$$' | wc -l | sed -e 's/^[ \t]*//')
 
-init-docker:
-	@echo "Creating and starting the containers using docker-compose..."
+start-minio:
+	@echo "Creating and starting the Minio container using {docker-compose}..."
 	@docker-compose up -d
 
-	@echo "installing Elasticsearch ingest-attachement plugin..."
-	@docker exec $(EsContainerName) bin/elasticsearch-plugin install -b ingest-attachment
-
-	@echo "Restarting Elasticsearch..."
-	@docker stop $(EsContainerName)
-	@docker start $(EsContainerName)
-
-	@echo "done."
-
-start-docker:
-	@echo "Creating the containers using docker-compose..."
-	@docker-compose up -d
-
-stop-docker:
-	@echo "Stopping the containers using docker-compose..."
+stop-minio:
+	@echo "Stopping the Minio container using {docker-compose}..."
 	@docker-compose stop
 
-restart-docker: stop-docker start-docker
+restart-minio: stop-minio start-minio
 
-nuke:
-	@echo "Stopping and deleting the containers using docker-compose..."
-	@docker-compose -f $(BaseCompose) -f $(DevCompose) -f $(ProdCompose) down
+clean-minio:
+	@echo "Stopping and deleting the Minio container using {docker-compose}..."
+	@docker-compose -f $(DOCKER_COMPOSE)  down
 
-init-docker-dev:
-	@echo "starting Docker for the Environment={Development}..."
-	@docker build -t $(backendContainerName)-dev .
-	@docker-compose -f $(BaseCompose) -f $(DevCompose) up -d 
+build-app-image:
+	@echo "Building the Backend image...."
+	@docker build -t $(BACKEND_IMAGE_NAME) .
 
-	@echo "installing Elasticsearch ingest-attachement plugin..."
-	@docker exec $(EsContainerName)-dev bin/elasticsearch-plugin install -b ingest-attachment
+start-docker-app:
+	@echo "Starting docker app..."
+	@docker-compose -f $(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_DEV) up -d 
 
-	@echo "Restarting Elasticsearch..."
-	@docker stop $(EsContainerName)-dev
-	@docker start $(EsContainerName)-dev
+stop-docker-app: ## Stops the APP container if running.
+	@echo "Stopping the Backend container..."
 
-	@echo "done."
+	@if [ $(BACKEND_CONTAINER_UP) -eq 1 ]; then \
+		docker stop $(BACKEND_CONTAINER_NAME) > /dev/null; \
+	fi
 
-start-docker-dev:
-	@echo "starting Docker for the Environment={Development}..."
-	@docker build -t $(backendContainerName)-dev .
-	@docker-compose -f $(BaseCompose) -f $(DevCompose) up -d 
+remove-docker-app:
+	@echo "Removing the backend container..."
+	@docker rm $(BACKEND_CONTAINER_NAME)
 
-refresh-api-dev:
-	@echo "Refreshing the backend API for the Environment={Development}..."
-	@docker build -t $(backendContainerName)-dev .
-	@docker-compose -f $(BaseCompose) -f $(DevCompose) up -d --no-deps --build $(backendContainerName)-dev
+remove-docker-image:
+	@echo "Cleaning the Backend App image..."
+	@docker rmi $(BACKEND_IMAGE_NAME)
 
-install-ingest:
-	@echo "Run the Command : [elasticsearch-plugin install ingest-attachment]" 
-	@docker exec -it $(EsContainerName) bash
-	
+clean-docker-app: stop-docker-app remove-docker-app remove-docker-image
+
+nuke: 
+	@docker-compose -f $(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_DEV) down

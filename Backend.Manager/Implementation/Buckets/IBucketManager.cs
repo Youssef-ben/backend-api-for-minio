@@ -1,32 +1,25 @@
-﻿namespace Backend.Manager.Implementation.Buckets
+﻿using Minio.DataModel;
+
+namespace Backend.Minio.Manager.Implementation.Buckets
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using Minio.DataModel;
+    using Backend.Minio.Manager.Helpers;
 
     public interface IBucketManager
     {
-        BucketManager SetBucket(string name);
+        Task<bool> DoesBucketExistsAsync(string bucketName, bool throwError = false);
 
-        /// <summary>
-        /// The parameter is used to determine if we need to create ElasticSearch index or not.
-        /// This means that when renaming the bucket we don't want to create the ElasticSearch index in this method but
-        /// instead we will be creating it from the ElasticSearch layer.
-        /// </summary>
-        /// <param name="shouldCreateEsIndex">Define if we need to create the ElasticSearch Index too. </param>
-        /// <returns>True if all went as expected, false otherwise.</returns>
-        Task<bool> CreateBucketAsync(bool shouldCreateEsIndex = true);
+        Task<Bucket> CreateBucketAsync(string bucketName);
 
-        Task<Bucket> GetBucketAsync();
+        Task<Bucket> GetBucketAsync(string bucketName);
 
-        Task<bool> RenameBucketAsync(string newBucketName);
+        Task<Bucket> RenameBucketAsync(string oldName, string newName);
 
-        Task<bool> DeleteBucketAsync(string bucket = "");
+        Task<Bucket> DeleteBucketAsync(string bucketName);
 
-        Task<bool> BucketExistsAsync();
+        Task<ICollection<Item>> GetBucketListOfItemsAsync(string bucketName);
 
-        Task<ICollection<Bucket>> BucketsListAsync(int limit = 25, int page = 1);
-
-        ICollection<Item> GetListOfItemsForBucket();
+        Task<ICollection<Bucket>> GetAllBucketsAsync(int page = 1, int size = Constants.DEFAULT_PAGE_LIMITE);
     }
 }
