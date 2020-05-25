@@ -21,10 +21,6 @@ clean-minio:
 	@echo "Stopping and deleting the Minio container using {docker-compose}..."
 	@docker-compose -f $(DOCKER_COMPOSE)  down
 
-build-app-image:
-	@echo "Building the Backend image...."
-	@docker build -t $(BACKEND_IMAGE_NAME) .
-
 start-docker-app:
 	@echo "Starting docker app..."
 	@docker-compose -f $(DOCKER_COMPOSE) -f $(DOCKER_COMPOSE_DEV) up -d 

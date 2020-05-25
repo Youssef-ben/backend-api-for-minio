@@ -6,12 +6,11 @@ Backend API, is a single access point to manage your Object Storage Server (mini
 
 ### 1. Technologies
 
-- **Web API** : netCore 2.1 LTS.
-- **XUnit** : Testing framework.
+- **Web API** : netCore 3.1 LTS.
+- **XUnit** : Testing framework. (Not yet)
 - **Swagger** : Documentations for the Web API.
 - **StyleCop** : Code Analyzer to enforce a set of style and consistency rules.
 - **Minio** : Object Storage Server.
-- **Elasticsearch** : Search engine.
 - **Docker** : Container platform.
 
 ### 2. Tools
@@ -37,27 +36,28 @@ In the API Project always use the Manager library for the bussiness rules.
 This commands are based on the Makefile. for more informations see [MakeFile.](https://github.com/Youssef-ben/backend-api-for-minio/blob/dev/Makefile)
 
 ```bash
-## Init the needed Docker containers for development mode.
-## This will create the containers and install elsaticsearch {ingest-attachment} plugin.
-make init-docker
+## ================== MINIO CONTAINER ====================== ##
+make start-minio
 
-## Start all containers
-make start-docker
+make stop-minio
 
-## Stop all containers
-make stop-docker
+make restart-minio
 
-## Restart all containers
-make restart-docker
+make clean-minio
 
-## Destroy all the containers
+
+## ================== APP CONTAINER ======================== ##
+make start-docker-app
+
+make stop-docker-app
+
+make remove-docker-app
+
+make remove-docker-image
+
+make clean-docker-app
+
 make nuke
-
-## Build the API image and start the container
-make init-docker-dev
-
-## Start the containers only
-make start-docker-dev
 ```
 
 ### 3. API Endpoints
